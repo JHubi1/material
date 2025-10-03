@@ -1,0 +1,1 @@
+flutter create --description "A helper package for other Material Apps." -t package material_helper

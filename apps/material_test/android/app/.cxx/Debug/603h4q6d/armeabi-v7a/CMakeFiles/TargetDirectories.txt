@@ -1,0 +1,2 @@
+C:/Users/jakob/Documents/GitHub/material/apps/material_test/android/app/.cxx/Debug/603h4q6d/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/jakob/Documents/GitHub/material/apps/material_test/android/app/.cxx/Debug/603h4q6d/armeabi-v7a/CMakeFiles/rebuild_cache.dir

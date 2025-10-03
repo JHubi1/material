@@ -1,0 +1,1 @@
+flutter create --description "A simple test app, part of the Material Apps collection" --org com.jhubi1.material.test --platforms=android -e material_test

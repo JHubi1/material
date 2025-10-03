@@ -1,0 +1,58 @@
+{
+    "@@locale": "en",
+    "themeModeSwitcherDark": "Dark",
+    "@themeModeSwitcherDark": {
+        "description": "Description of the dark theme mode switcher",
+        "context": "Component:ThemeModeSwitcher"
+    },
+    "themeModeSwitcherSystem": "System",
+    "@themeModeSwitcherSystem": {
+        "description": "Description of the system theme mode switcher",
+        "context": "Component:ThemeModeSwitcher"
+    },
+    "themeModeSwitcherLight": "Light",
+    "@themeModeSwitcherLight": {
+        "description": "Description of the light theme mode switcher",
+        "context": "Component:ThemeModeSwitcher"
+    },
+    "promptDialogActionInvoke": "Invoke action",
+    "@promptDialogActionInvoke": {
+        "description": "Default label for the action button in a prompt dialog",
+        "context": "Component:PromptDialog"
+    },
+    "aboutScreenTitle": "About",
+    "@aboutScreenTitle": {
+        "description": "Title of the about screen. This string is in MLA title case",
+        "context": "Screen:About"
+    },
+    "aboutScreenDescription": "This app is part of JHubi1's Material App collection of simple, ad-free, and open-source gadget apps.",
+    "@aboutScreenDescription": {
+        "description": "Description of the about screen",
+        "context": "Screen:About"
+    },
+    "aboutScreenLinksHeadline": "Links",
+    "@aboutScreenLinksHeadline": {
+        "description": "Headline for the links section in the about screen. This string is in MLA title case",
+        "context": "Screen:About:Links"
+    },
+    "aboutScreenLinksGitHub": "GitHub",
+    "@aboutScreenLinksGitHub": {
+        "description": "Label for the GitHub link in the about screen. This string is in MLA title case",
+        "context": "Screen:About:Links"
+    },
+    "aboutScreenLinksCreateIssue": "Create an Issue",
+    "@aboutScreenLinksCreateIssue": {
+        "description": "Label for the report issue link in the about screen. This string is in MLA title case",
+        "context": "Screen:About:Links"
+    },
+    "aboutScreenLinksCreateIssueSubtitle": "Report a bug or suggest a feature.",
+    "@aboutScreenLinksCreateIssueSubtitle": {
+        "description": "Description for the report issue link in the about screen",
+        "context": "Screen:About:Links"
+    },
+    "aboutScreenLinksLicenses": "Licenses",
+    "@aboutScreenLinksLicenses": {
+        "description": "Label for the licenses link in the about screen. This string is in MLA title case",
+        "context": "Screen:About:Links"
+    }
+}

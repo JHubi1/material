@@ -1,0 +1,33 @@
+name: material_helper
+description: A helper package for other Material Apps.
+
+environment:
+  sdk: ^3.9.2
+  flutter: ">=3.35.5"
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  path_provider: ^2.1.5
+  http: ^1.5.0
+  sqlite3: ^2.9.0
+  sqlite3_flutter_libs: ^0.5.39
+  shared_preferences: ^2.5.3
+  package_info_plus: ^9.0.0
+  simple_icons: ^14.6.1
+  url_launcher: ^6.3.2
+
+  # See: https://github.com/material-foundation/flutter-packages/issues/574
+  # dynamic_color: ^1.8.1
+  dynamic_system_colors: ^1.8.0
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_gen: ^5.8.0
+
+flutter:
+  generate: true

@@ -1,0 +1,2 @@
+C:/Users/jakob/Documents/GitHub/material/apps/material_test/android/app/.cxx/RelWithDebInfo/e6po722p/x86/CMakeFiles/edit_cache.dir
+C:/Users/jakob/Documents/GitHub/material/apps/material_test/android/app/.cxx/RelWithDebInfo/e6po722p/x86/CMakeFiles/rebuild_cache.dir

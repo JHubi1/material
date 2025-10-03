@@ -1,0 +1,11 @@
+name: material
+description: A collection of simple, ad-free, and open-source gadget apps.
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+  flutter: ">=3.35.5"
+
+workspace:
+  - packages/material_helper
+  - apps/material_test
