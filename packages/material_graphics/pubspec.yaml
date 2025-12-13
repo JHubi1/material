@@ -1,0 +1,28 @@
+name: material_graphics
+description: A graphics helper package for other Material Apps.
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+  flutter: ">=1.17.0"
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  material_helper: any
+  vector_math: ^2.2.0
+  simple_icons: ^14.6.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  fonts:
+    - family: GoogleSansCode
+      fonts:
+        - asset: assets/fonts/GoogleSansCode.ttf
+        - asset: assets/fonts/GoogleSansCode-Italic.ttf
+          style: italic

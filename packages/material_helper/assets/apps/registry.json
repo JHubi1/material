@@ -1,0 +1,7 @@
+{
+  "material_test": {
+    "name": "Material Test",
+    "description": "A simple test app, part of the Material Apps collection.",
+    "package": "com.jhubi1.material.test.material_test"
+  }
+}

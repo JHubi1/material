@@ -6,6 +6,13 @@ environment:
   sdk: ^3.9.2
   flutter: ">=3.35.5"
 
+dev_dependencies:
+  gitbaker: ^0.1.2
+
+gitbaker:
+  output: packages/material_helper/lib/src/generated
+
 workspace:
   - packages/material_helper
+  - packages/material_graphics
   - apps/material_test

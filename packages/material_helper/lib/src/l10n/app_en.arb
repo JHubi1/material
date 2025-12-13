@@ -1,0 +1,209 @@
+{
+    "@@locale": "en",
+    "copiedToClipboard": "Copied to clipboard.",
+    "@copiedToClipboard": {
+        "description": "Snackbar message shown when something has been copied to the clipboard",
+        "context": "Global"
+    },
+    "unavailableCharacter": "–",
+    "@unavailableCharacter": {
+        "description": "Character used to indicate that a value is unavailable. Should be unchanged if not totally necessary.",
+        "context": "Global"
+    },
+    "setValue": "Set {value}",
+    "@setValue": {
+        "description": "Generic title or label for a set action. This string is in MLA title case",
+        "placeholders": {
+            "value": {
+                "type": "String",
+                "description": "The value to set. This should continue the MLA title case of the parent",
+                "example": "Name"
+            }
+        },
+        "context": "Global"
+    },
+    "themeModeSwitcherDark": "Dark",
+    "@themeModeSwitcherDark": {
+        "description": "Description of the dark theme mode switcher",
+        "context": "Component:ThemeModeSwitcher"
+    },
+    "themeModeSwitcherSystem": "System",
+    "@themeModeSwitcherSystem": {
+        "description": "Description of the system theme mode switcher",
+        "context": "Component:ThemeModeSwitcher"
+    },
+    "themeModeSwitcherLight": "Light",
+    "@themeModeSwitcherLight": {
+        "description": "Description of the light theme mode switcher",
+        "context": "Component:ThemeModeSwitcher"
+    },
+    "promptDialogActionInvoke": "Invoke action",
+    "@promptDialogActionInvoke": {
+        "description": "Default label for the action button in a prompt dialog",
+        "context": "Component:PromptDialog"
+    },
+    "promptDialogActionClear": "Clear",
+    "@promptDialogActionClear": {
+        "description": "Label for the clear action in a prompt dialog",
+        "context": "Component:PromptDialog"
+    },
+    "promptDialogActionCopy": "Copy",
+    "@promptDialogActionCopy": {
+        "description": "Label for the copy action in a prompt dialog",
+        "context": "Component:PromptDialog"
+    },
+    "aboutScreenTitle": "About",
+    "@aboutScreenTitle": {
+        "description": "Title of the about screen. This string is in MLA title case",
+        "context": "Screen:About"
+    },
+    "aboutScreenDescription": "{appName} is part of JHubi1’s Material Apps, a collection of simple, open-source tools.",
+    "@aboutScreenDescription": {
+        "description": "Description of the about screen",
+        "context": "Screen:About",
+        "placeholders": {
+            "appName": {
+                "type": "String",
+                "description": "The name of the app",
+                "example": "Material Test"
+            }
+        }
+    },
+    "aboutScreenLinksHeadline": "Links",
+    "@aboutScreenLinksHeadline": {
+        "description": "Headline for the links section in the about screen. This string is in MLA title case",
+        "context": "Screen:About:Links"
+    },
+    "aboutScreenLinksGitHub": "GitHub",
+    "@aboutScreenLinksGitHub": {
+        "description": "Label for the GitHub link in the about screen. This string is in MLA title case",
+        "context": "Screen:About:Links"
+    },
+    "aboutScreenLinksCreateIssue": "Create an Issue",
+    "@aboutScreenLinksCreateIssue": {
+        "description": "Label for the report issue link in the about screen. This string is in MLA title case",
+        "context": "Screen:About:Links"
+    },
+    "aboutScreenLinksCreateIssueSubtitle": "Report a bug or suggest a feature.",
+    "@aboutScreenLinksCreateIssueSubtitle": {
+        "description": "Description for the report issue link in the about screen",
+        "context": "Screen:About:Links"
+    },
+    "aboutScreenLinksLicenses": "Licenses",
+    "@aboutScreenLinksLicenses": {
+        "description": "Label for the licenses link in the about screen. This string is in MLA title case",
+        "context": "Screen:About:Links"
+    },
+    "aboutScreenOtherAppsHeadline": "Other Apps",
+    "@aboutScreenOtherAppsHeadline": {
+        "description": "Headline for the other apps section in the about screen. This string is in MLA title case",
+        "context": "Screen:About:OtherApps"
+    },
+    "aboutTechnicalScreenTitle": "Technical Details",
+    "@aboutTechnicalScreenTitle": {
+        "description": "Title of the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical"
+    },
+    "aboutTechnicalScreenPackageInfoAppName": "App Name",
+    "@aboutTechnicalScreenPackageInfoAppName": {
+        "description": "Label for the app name in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:PackageInfo"
+    },
+    "aboutTechnicalScreenPackageInfoPackageName": "Package Name",
+    "@aboutTechnicalScreenPackageInfoPackageName": {
+        "description": "Label for the package name in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:PackageInfo"
+    },
+    "aboutTechnicalScreenPackageInfoVersion": "Version",
+    "@aboutTechnicalScreenPackageInfoVersion": {
+        "description": "Label for the version in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:PackageInfo"
+    },
+    "aboutTechnicalScreenPackageInfoBuildNumber": "Build Number",
+    "@aboutTechnicalScreenPackageInfoBuildNumber": {
+        "description": "Label for the build number in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:PackageInfo"
+    },
+    "aboutTechnicalScreenPackageInfoRunningTime": "Running Time",
+    "@aboutTechnicalScreenPackageInfoRunningTime": {
+        "description": "Label for the run time in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:PackageInfo"
+    },
+    "aboutTechnicalScreenInstallationHeadline": "Installation",
+    "@aboutTechnicalScreenInstallationHeadline": {
+        "description": "Headline for the installation section in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:Installation"
+    },
+    "aboutTechnicalScreenInstallationInstallerStore": "App Installer",
+    "@aboutTechnicalScreenInstallationInstallerStore": {
+        "description": "Label for the installer store in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:Installation"
+    },
+    "aboutTechnicalScreenInstallationInstallTime": "First Install",
+    "@aboutTechnicalScreenInstallationInstallTime": {
+        "description": "Label for the install time in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:Installation"
+    },
+    "aboutTechnicalScreenInstallationUpdateTime": "Last Update",
+    "@aboutTechnicalScreenInstallationUpdateTime": {
+        "description": "Label for the update time in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:Installation"
+    },
+    "aboutTechnicalScreenGitHeadline": "Git",
+    "@aboutTechnicalScreenGitHeadline": {
+        "description": "Headline for the git section in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:Git"
+    },
+    "aboutTechnicalScreenGitBranch": "Branch",
+    "@aboutTechnicalScreenGitBranch": {
+        "description": "Label for the git branch in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:Git"
+    },
+    "aboutTechnicalScreenGitBranchRevision": "Revision",
+    "@aboutTechnicalScreenGitBranchRevision": {
+        "description": "Label for the git branch revision in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:Git"
+    },
+    "aboutTechnicalScreenGitLocalChanges": "Local Changes",
+    "@aboutTechnicalScreenGitLocalChanges": {
+        "description": "Label for the local changes in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:Git"
+    },
+    "aboutTechnicalScreenGitCommit": "Commit",
+    "@aboutTechnicalScreenGitCommit": {
+        "description": "Label for the git commit in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:Git"
+    },
+    "aboutTechnicalScreenGitCommitMessage": "Message",
+    "@aboutTechnicalScreenGitCommitMessage": {
+        "description": "Label for the git commit message in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:Git"
+    },
+    "aboutTechnicalScreenGitCommitTime": "Time",
+    "@aboutTechnicalScreenGitCommitTime": {
+        "description": "Label for the git commit time in the technical details screen. This string is in MLA title case",
+        "context": "Screen:AboutTechnical:Git"
+    },
+    "licensesScreenTitle": "Licenses",
+    "@licensesScreenTitle": {
+        "description": "Title of the licenses screen. This string is in MLA title case",
+        "context": "Screen:Licenses"
+    },
+    "licensesDetailsScreenTitle": "Licenses of \"{packageName}\"",
+    "@licensesDetailsScreenTitle": {
+        "description": "Title of the license details screen for a specific package. This string is in MLA title case",
+        "context": "Screen:LicensesDetails",
+        "placeholders": {
+            "packageName": {
+                "type": "String",
+                "description": "The name of the package whose license is being displayed",
+                "example": "material_helper"
+            }
+        }
+    },
+    "settingsScreenTitle": "Settings",
+    "@settingsScreenTitle": {
+        "description": "Default title of the settings screen. This string is in MLA title case",
+        "context": "Screen:Settings"
+    }
+}
