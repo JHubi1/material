@@ -35,6 +35,7 @@ class AboutScreen extends StatefulWidget {
     required Brightness brightness,
     String? asset,
     String? package,
+    bool useDarkAssetFallback = false,
   }) => FittedBox(
     fit: BoxFit.contain,
     child: SizedBox.square(
@@ -42,9 +43,9 @@ class AboutScreen extends StatefulWidget {
       child: ClipOval(
         child: Image.asset(
           asset ??
-              (brightness == Brightness.light
-                  ? "assets/icon/icon.png"
-                  : "assets/icon/iconDark.png"),
+              (brightness == Brightness.dark && useDarkAssetFallback
+                  ? "assets/icon/iconDark.png"
+                  : "assets/icon/icon.png"),
           package: package,
           filterQuality: FilterQuality.high,
           errorBuilder: (_, _, _) =>
