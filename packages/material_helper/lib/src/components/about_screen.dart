@@ -19,6 +19,7 @@ class AboutScreen extends StatefulWidget {
   final String? explanation;
   final Uri? githubUrl;
   final Map<String, Object?>? gitBakerData;
+  final bool iconUseDarkAssetFallback;
 
   const AboutScreen({
     super.key,
@@ -26,6 +27,7 @@ class AboutScreen extends StatefulWidget {
     this.explanation,
     this.githubUrl,
     this.gitBakerData,
+    this.iconUseDarkAssetFallback = false,
   });
 
   // static Widget get appIcon => appIconFromColor(Colors.blue[400]!);
@@ -150,6 +152,8 @@ class _AboutScreenState extends State<AboutScreen> {
                           child: AboutScreen.appIcon(
                             name: packageInfo?.appName,
                             brightness: Theme.brightnessOf(context),
+                            useDarkAssetFallback:
+                                widget.iconUseDarkAssetFallback,
                           ),
                         ),
                       ),
@@ -621,6 +625,7 @@ void showAboutScreen(
   String? explanation,
   Uri? githubUrl,
   Map<String, Object?>? gitBakerData,
+  bool iconUseDarkAssetFallback = false,
 }) {
   Navigator.of(context).push(
     MaterialPageRoute(
@@ -629,6 +634,7 @@ void showAboutScreen(
         explanation: explanation,
         githubUrl: githubUrl,
         gitBakerData: gitBakerData,
+        iconUseDarkAssetFallback: iconUseDarkAssetFallback,
       ),
     ),
   );
