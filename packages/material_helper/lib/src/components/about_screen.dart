@@ -15,12 +15,15 @@ typedef AppRegistry = Map<String, Map>;
 
 class AboutScreen extends StatefulWidget {
   final bool referenceMaterialApps;
+
+  final String? explanation;
   final Uri? githubUrl;
   final Map<String, Object?>? gitBakerData;
 
   const AboutScreen({
     super.key,
     this.referenceMaterialApps = true,
+    this.explanation,
     this.githubUrl,
     this.gitBakerData,
   });
@@ -187,12 +190,13 @@ class _AboutScreenState extends State<AboutScreen> {
                     ],
                   ),
                 ),
-                if (widget.referenceMaterialApps)
+                if (widget.referenceMaterialApps || widget.explanation != null)
                   MaterialListTile(
                     title: Text(
-                      localizations.aboutScreenDescription(
-                        packageInfo?.appName ?? "This app",
-                      ),
+                      widget.explanation ??
+                          localizations.aboutScreenDescription(
+                            packageInfo?.appName ?? "This app",
+                          ),
                       maxLines: 4,
                     ),
                     titleStyle: MaterialListTileTitleStyle.text,
@@ -610,6 +614,7 @@ class _AboutTechnicalScreenRunTimeState
 void showAboutScreen(
   BuildContext context, {
   bool referenceMaterialApps = true,
+  String? explanation,
   Uri? githubUrl,
   Map<String, Object?>? gitBakerData,
 }) {
@@ -617,6 +622,7 @@ void showAboutScreen(
     MaterialPageRoute(
       builder: (_) => AboutScreen(
         referenceMaterialApps: referenceMaterialApps,
+        explanation: explanation,
         githubUrl: githubUrl,
         gitBakerData: gitBakerData,
       ),
