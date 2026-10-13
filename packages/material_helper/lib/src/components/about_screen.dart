@@ -33,7 +33,7 @@ class AboutScreen extends StatefulWidget {
   static Widget appIcon({
     required String? name,
     required Brightness brightness,
-    String asset = "assets/icon/icon.png",
+    String? asset,
     String? package,
   }) => FittedBox(
     fit: BoxFit.contain,
@@ -41,7 +41,10 @@ class AboutScreen extends StatefulWidget {
       dimension: 112,
       child: ClipOval(
         child: Image.asset(
-          asset,
+          asset ??
+              (brightness == Brightness.light
+                  ? "assets/icon/icon.png"
+                  : "assets/icon/iconDark.png"),
           package: package,
           filterQuality: FilterQuality.high,
           errorBuilder: (_, _, _) =>
