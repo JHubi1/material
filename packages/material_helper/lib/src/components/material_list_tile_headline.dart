@@ -1,7 +1,7 @@
 /// @docImport 'material_list_tile.dart';
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A headline for a section of list tiles.
 ///
@@ -19,9 +19,11 @@ class MaterialListTileHeadline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
     return ListTileTheme(
       child: Padding(
-        padding: EdgeInsets.only(top: 12),
+        padding: EdgeInsets.only(top: 8),
         child: Transform.translate(
           offset: const Offset(0, 4),
           child: ListTile(
@@ -32,8 +34,7 @@ class MaterialListTileHeadline extends StatelessWidget {
                   2,
             ),
             title: DefaultTextStyle(
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
+              style: textTheme.labelLarge!.copyWith(
                 color: Theme.of(context).colorScheme.primary,
               ),
               child: child,

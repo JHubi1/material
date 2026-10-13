@@ -2,19 +2,28 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:material_graphics/material_graphics.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../material_helper.dart';
 import '../generated/gitbaker.g.dart';
-import '../l10n/app_localizations.dart';
 import '../l10n/app_localizations_en.dart';
 
 typedef AppRegistry = Map<String, Map>;
 
 class AboutScreen extends StatefulWidget {
-  const AboutScreen({super.key});
+  final bool referenceMaterialApps;
+  final Uri? githubUrl;
+  final Map<String, Object?>? gitBakerData;
+
+  const AboutScreen({
+    super.key,
+    this.referenceMaterialApps = true,
+    this.githubUrl,
+    this.gitBakerData,
+  });
 
   // static Widget get appIcon => appIconFromColor(Colors.blue[400]!);
 
@@ -150,7 +159,7 @@ class _AboutScreenState extends State<AboutScreen> {
                             Text(
                               packageInfo?.version ??
                                   localizations.unavailableCharacter,
-                              style: TextTheme.of(context).labelMedium,
+                              style: TextTheme.of(context).bodyMedium,
                               maxLines: 1,
                             ),
                           ],
@@ -166,6 +175,8 @@ class _AboutScreenState extends State<AboutScreen> {
                               MaterialPageRoute(
                                 builder: (_) => AboutTechnicalScreen(
                                   packageInfo: packageInfo,
+                                  gitBakerData:
+                                      widget.gitBakerData ?? GitBaker.toJson(),
                                 ),
                               ),
                             ),
@@ -176,50 +187,57 @@ class _AboutScreenState extends State<AboutScreen> {
                     ],
                   ),
                 ),
-                MaterialListTile(
-                  title: Text(
-                    localizations.aboutScreenDescription(
-                      packageInfo?.appName ?? "This app",
+                if (widget.referenceMaterialApps)
+                  MaterialListTile(
+                    title: Text(
+                      localizations.aboutScreenDescription(
+                        packageInfo?.appName ?? "This app",
+                      ),
+                      maxLines: 4,
                     ),
-                    maxLines: 4,
+                    titleStyle: MaterialListTileTitleStyle.text,
                   ),
-                  titleStyle: MaterialListTileTitleStyle.text,
-                ),
               ]),
 
               ...MaterialListTile.group(
                 headline: MaterialListTileHeadline(
-                  Text(localizations.aboutScreenLinksHeadline),
+                  Text(localizations.aboutScreenReferencesHeadline),
                 ),
                 [
-                  MaterialListTile(
-                    leading: Icon(SimpleIcons.github),
-                    title: Text(localizations.aboutScreenLinksGitHub),
-                    onTap: () => launchUrl(
-                      Uri.parse("https://github.com/JHubi1/material"),
-                    ),
-                  ),
-                  MaterialListTile(
-                    leading: Icon(Icons.bug_report_outlined),
-                    title: Text(localizations.aboutScreenLinksCreateIssue),
-                    subtitle: Text(
-                      localizations.aboutScreenLinksCreateIssueSubtitle,
-                    ),
-                    onTap: () => launchUrl(
-                      Uri.parse(
-                        "https://github.com/JHubi1/material/issues/new",
+                  if (widget.referenceMaterialApps ||
+                      widget.githubUrl != null) ...[
+                    MaterialListTile(
+                      leading: Icon(SimpleIcons.github),
+                      title: Text(localizations.aboutScreenReferencesGitHub),
+                      onTap: () => launchUrl(
+                        Uri.parse("https://github.com/JHubi1/material"),
                       ),
                     ),
-                  ),
+                    MaterialListTile(
+                      leading: Icon(Icons.bug_report_outlined),
+                      title: Text(
+                        localizations.aboutScreenReferencesCreateIssue,
+                      ),
+                      subtitle: Text(
+                        localizations.aboutScreenReferencesCreateIssueSubtitle,
+                      ),
+                      onTap: () => launchUrl(
+                        (widget.githubUrl ??
+                                Uri.parse("https://github.com/JHubi1/material"))
+                            .enforceDirectoryHandling()
+                            .resolve("issues/new"),
+                      ),
+                    ),
+                  ],
                   MaterialListTile(
                     leading: Icon(Icons.gavel_outlined),
-                    title: Text(localizations.aboutScreenLinksLicenses),
+                    title: Text(localizations.aboutScreenReferencesLicenses),
                     onTap: () => showLicensesScreen(context),
                   ),
                 ],
               ),
 
-              if (appRegistry != null)
+              if (appRegistry != null && widget.referenceMaterialApps)
                 ...MaterialListTile.group(
                   headline: MaterialListTileHeadline(
                     Text(localizations.aboutScreenOtherAppsHeadline),
@@ -247,16 +265,11 @@ class _AboutScreenState extends State<AboutScreen> {
                           subtitle: e.value["description"] != null
                               ? Text(e.value["description"]!, maxLines: 3)
                               : null,
-                          onTap: () {
-                            launchUrl(
-                              Uri.parse(
-                                "https://github.com/JHubi1/material/tree/main/apps/${e.key}",
-                              ),
-                            );
-                            Future.delayed(
-                              Durations.extralong4,
-                            ).then((_) => closeInAppWebView());
-                          },
+                          onTap: () => launchUrl(
+                            Uri.parse(
+                              "https://github.com/JHubi1/material/tree/main/apps/${e.key}",
+                            ),
+                          ),
                         ),
                       )
                       .toList(),
@@ -273,8 +286,13 @@ class _AboutScreenState extends State<AboutScreen> {
 
 class AboutTechnicalScreen extends StatefulWidget {
   final PackageInfo? packageInfo;
+  final Map<String, Object?> gitBakerData;
 
-  const AboutTechnicalScreen({super.key, required this.packageInfo});
+  const AboutTechnicalScreen({
+    super.key,
+    required this.packageInfo,
+    required this.gitBakerData,
+  });
 
   @override
   State<AboutTechnicalScreen> createState() => _AboutTechnicalScreenState();
@@ -286,6 +304,29 @@ class _AboutTechnicalScreenState extends State<AboutTechnicalScreen> {
     final localizations =
         MaterialHelperLocalizations.of(context) ??
         MaterialHelperLocalizationsEn();
+
+    final branches = (widget.gitBakerData["branches"] as List? ?? const [])
+        .map((entry) => Map<String, Object?>.from(entry as Map))
+        .toList();
+    final currentBranchName = widget.gitBakerData["currentBranch"] as String?;
+    final currentBranch = branches.firstWhere(
+      (branch) => branch["name"] == currentBranchName,
+      orElse: () => <String, Object?>{},
+    );
+    final branchCommits = currentBranch["commits"] as List? ?? const [];
+    final allCommits = (widget.gitBakerData["commits"] as List? ?? const [])
+        .map((entry) => Map<String, Object?>.from(entry as Map));
+    Map<String, Object?>? latestCommit;
+    if (branchCommits.isNotEmpty) {
+      for (final commit in allCommits) {
+        if (commit["hash"] == branchCommits.last) latestCommit = commit;
+      }
+    }
+    final workspace = (widget.gitBakerData["workspace"] as List? ?? const [])
+        .map((entry) => Map<String, Object?>.from(entry as Map))
+        .toList();
+    final workspaceSummary = gitBakerWorkspaceFormat(workspace);
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -391,56 +432,69 @@ class _AboutTechnicalScreenState extends State<AboutTechnicalScreen> {
                 [
                   MaterialListTile(
                     title: Text(localizations.aboutTechnicalScreenGitBranch),
-                    subtitle: Text(GitBaker.currentBranch.name),
-                    onLongPress: () => copy(GitBaker.currentBranch.name),
+                    subtitle: Text(
+                      currentBranchName ?? localizations.unavailableCharacter,
+                    ),
+                    onLongPress: () => copy(currentBranchName),
                   ),
                   MaterialListTile(
                     title: Text(
                       localizations.aboutTechnicalScreenGitBranchRevision,
                     ),
-                    subtitle: Text(GitBaker.currentBranch.revision.toString()),
+                    subtitle: Text(
+                      currentBranch["revision"]?.toString() ??
+                          localizations.unavailableCharacter,
+                    ),
                     onLongPress: () =>
-                        copy(GitBaker.currentBranch.revision.toString()),
+                        copy(currentBranch["revision"]?.toString()),
                   ),
-                  if (GitBaker.workspace.isNotEmpty)
+                  if (workspaceSummary != "Clean")
                     MaterialListTile(
                       title: Text(
                         localizations.aboutTechnicalScreenGitLocalChanges,
                       ),
-                      subtitle: Builder(
-                        builder: (context) {
-                          return Text(
-                            gitBakerWorkspaceFormat(GitBaker.workspace),
-                          );
-                        },
-                      ),
-                      onLongPress: () =>
-                          copy(gitBakerWorkspaceFormat(GitBaker.workspace)),
+                      subtitle: Text(workspaceSummary),
+                      onLongPress: () => copy(workspaceSummary),
                     ),
                 ],
               ),
               ...MaterialListTile.group([
                 MaterialListTile(
                   title: Text(localizations.aboutTechnicalScreenGitCommit),
-                  subtitle: Text(GitBaker.currentBranch.commits.last.hash),
-                  onLongPress: () =>
-                      copy(GitBaker.currentBranch.commits.last.hash),
+                  subtitle: Text(
+                    latestCommit?["hash"]?.toString() ??
+                        localizations.unavailableCharacter,
+                  ),
+                  onLongPress: () => copy(latestCommit?["hash"]?.toString()),
                 ),
                 MaterialListTile(
                   title: Text(
                     localizations.aboutTechnicalScreenGitCommitMessage,
                   ),
-                  subtitle: Text(GitBaker.currentBranch.commits.last.message),
-                  onLongPress: () =>
-                      copy(GitBaker.currentBranch.commits.last.message),
+                  subtitle: Text(
+                    latestCommit?["message"]?.toString() ??
+                        localizations.unavailableCharacter,
+                  ),
+                  onLongPress: () => copy(latestCommit?["message"]?.toString()),
                 ),
                 MaterialListTile(
-                  title: Text(localizations.aboutTechnicalScreenGitCommitTime),
+                  title: Text(
+                    localizations.aboutTechnicalScreenGitCommitTimestamp,
+                  ),
                   subtitle: Text(
-                    dateFormat(GitBaker.currentBranch.commits.last.date)!,
+                    dateFormat(
+                          DateTime.tryParse(
+                            latestCommit?["date"]?.toString() ?? "",
+                          ),
+                        ) ??
+                        localizations.unavailableCharacter,
                   ),
                   onLongPress: () => copy(
-                    dateFormat(GitBaker.currentBranch.commits.last.date),
+                    dateFormat(
+                      DateTime.tryParse(
+                        latestCommit?["date"]?.toString() ?? "",
+                      ),
+                    ),
                   ),
                 ),
               ]),
@@ -455,40 +509,47 @@ class _AboutTechnicalScreenState extends State<AboutTechnicalScreen> {
 
   String? dateFormat(DateTime? dateTime) {
     if (dateTime == null) return null;
-    return dateTime.toIso8601String().split("T").join(" ").split(".").first;
+    // return dateTime.toIso8601String().split("T").join(" ").split(".").first;
+    return DateFormat.yMMMd(
+      MaterialHelperLocalizations.of(context)?.localeName ?? "en",
+    ).add_Hms().format(dateTime);
   }
 
-  String gitBakerWorkspaceFormat(List<WorkspaceEntry> entries) {
+  String gitBakerWorkspaceFormat(List<Map<String, Object?>> entries) {
     if (entries.isEmpty ||
-        (entries.length == 1 && entries[0].path.endsWith("gitbaker.g.dart"))) {
+        (entries.length == 1 &&
+            (entries[0]["path"] as String? ?? "").endsWith(
+              "gitbaker.g.dart",
+            ))) {
       return "Clean";
     }
-    final addedIndex = entries
-        .whereType<WorkspaceEntryChange>()
-        .where((e) => e.status.x == WorkspaceEntryStatusPart.added)
+    final changes = entries.where(
+      (entry) => entry["type"] == "change" || entry["type"] == "rename/copy",
+    );
+    final addedIndex = changes
+        .where((entry) => (entry["status"] as Map?)?["x"] == "added")
         .length;
-    final addedWorking = entries
-        .whereType<WorkspaceEntryChange>()
-        .where((e) => e.status.y == WorkspaceEntryStatusPart.added)
+    final addedWorking = changes
+        .where((entry) => (entry["status"] as Map?)?["y"] == "added")
         .length;
-    final modifiedIndex = entries
-        .whereType<WorkspaceEntryChange>()
-        .where((e) => e.status.x == WorkspaceEntryStatusPart.modified)
+    final modifiedIndex = changes
+        .where((entry) => (entry["status"] as Map?)?["x"] == "modified")
         .length;
-    final modifiedWorking = entries
-        .whereType<WorkspaceEntryChange>()
-        .where((e) => e.status.y == WorkspaceEntryStatusPart.modified)
+    final modifiedWorking = changes
+        .where((entry) => (entry["status"] as Map?)?["y"] == "modified")
         .length;
-    final removedIndex = entries
-        .whereType<WorkspaceEntryChange>()
-        .where((e) => e.status.x == WorkspaceEntryStatusPart.deleted)
+    final removedIndex = changes
+        .where((entry) => (entry["status"] as Map?)?["x"] == "deleted")
         .length;
-    final removedWorking = entries
-        .whereType<WorkspaceEntryChange>()
-        .where((e) => e.status.y == WorkspaceEntryStatusPart.deleted)
+    final removedWorking = changes
+        .where((entry) => (entry["status"] as Map?)?["y"] == "deleted")
         .length;
-    final renamedCopied = entries.whereType<WorkspaceEntryRenameCopy>().length;
-    final untracked = entries.whereType<WorkspaceEntryUntracked>().length;
+    final renamedCopied = entries
+        .where((entry) => entry["type"] == "rename/copy")
+        .length;
+    final untracked = entries
+        .where((entry) => entry["type"] == "untracked")
+        .length;
     return [
       if (addedIndex > 0 || modifiedIndex > 0 || removedIndex > 0)
         "I${[if (addedIndex > 0) "+$addedIndex", if (modifiedIndex > 0) "\u00B1$modifiedIndex", if (removedIndex > 0) "\u2212$removedIndex"].join()}",
@@ -515,7 +576,7 @@ class _AboutTechnicalScreenRunTimeState
   @override
   void initState() {
     super.initState();
-    Timer.periodic(Durations.short1, (_) => onUpdate());
+    Timer.periodic(Duration(milliseconds: 10), (_) => onUpdate());
   }
 
   void onUpdate() {
@@ -537,16 +598,33 @@ class _AboutTechnicalScreenRunTimeState
   }
 
   String durationFormat(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    final hours = twoDigits(duration.inHours);
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    final hours = duration.inHours.withLeadingZeros(2);
+    final minutes = duration.inMinutes.remainder(60).withLeadingZeros(2);
+    final seconds = duration.inSeconds.remainder(60).withLeadingZeros(2);
     var res = "$minutes:$seconds";
     if (hours != "00") res = "$hours:$res";
     return res;
   }
 }
 
-showAboutScreen(BuildContext context) {
-  Navigator.of(context).push(MaterialPageRoute(builder: (_) => AboutScreen()));
+void showAboutScreen(
+  BuildContext context, {
+  bool referenceMaterialApps = true,
+  Uri? githubUrl,
+  Map<String, Object?>? gitBakerData,
+}) {
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => AboutScreen(
+        referenceMaterialApps: referenceMaterialApps,
+        githubUrl: githubUrl,
+        gitBakerData: gitBakerData,
+      ),
+    ),
+  );
+}
+
+extension on Uri {
+  Uri enforceDirectoryHandling() =>
+      replace(path: path.endsWith("/") ? path : "$path/");
 }

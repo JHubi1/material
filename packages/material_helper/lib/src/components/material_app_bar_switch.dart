@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import '../../material_helper.dart';
 
 class MaterialAppBarSwitch extends StatelessWidget {
@@ -23,12 +23,13 @@ class MaterialAppBarSwitch extends StatelessWidget {
       ),
     );
 
-    final ListTileThemeData listTileTheme = ListTileTheme.of(context);
-    final ListTileControlAffinity effectiveControlAffinity =
+    final listTileTheme = ListTileTheme.of(context);
+    final effectiveControlAffinity =
         controlAffinity ??
         listTileTheme.controlAffinity ??
         ListTileControlAffinity.platform;
-    Widget? leading, trailing;
+    Widget? leading;
+    Widget? trailing;
     (leading, trailing) = switch (effectiveControlAffinity) {
       ListTileControlAffinity.leading => (control, null),
       ListTileControlAffinity.trailing ||

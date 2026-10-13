@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_de.dart';
 import 'app_localizations_en.dart';
 
 // ignore_for_file: type=lint
@@ -95,7 +96,10 @@ abstract class MaterialHelperLocalizations {
       ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('en')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('de'),
+  ];
 
   /// Snackbar message shown when something has been copied to the clipboard
   ///
@@ -163,40 +167,40 @@ abstract class MaterialHelperLocalizations {
   /// **'{appName} is part of JHubi1’s Material Apps, a collection of simple, open-source tools.'**
   String aboutScreenDescription(String appName);
 
-  /// Headline for the links section in the about screen. This string is in MLA title case
+  /// Headline for the references section in the about screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'Links'**
-  String get aboutScreenLinksHeadline;
+  /// **'References'**
+  String get aboutScreenReferencesHeadline;
 
   /// Label for the GitHub link in the about screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
   /// **'GitHub'**
-  String get aboutScreenLinksGitHub;
+  String get aboutScreenReferencesGitHub;
 
   /// Label for the report issue link in the about screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'Create an Issue'**
-  String get aboutScreenLinksCreateIssue;
+  /// **'Create an issue'**
+  String get aboutScreenReferencesCreateIssue;
 
   /// Description for the report issue link in the about screen
   ///
   /// In en, this message translates to:
   /// **'Report a bug or suggest a feature.'**
-  String get aboutScreenLinksCreateIssueSubtitle;
+  String get aboutScreenReferencesCreateIssueSubtitle;
 
   /// Label for the licenses link in the about screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
   /// **'Licenses'**
-  String get aboutScreenLinksLicenses;
+  String get aboutScreenReferencesLicenses;
 
   /// Headline for the other apps section in the about screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'Other Apps'**
+  /// **'Other apps'**
   String get aboutScreenOtherAppsHeadline;
 
   /// Title of the technical details screen. This string is in MLA title case
@@ -208,13 +212,13 @@ abstract class MaterialHelperLocalizations {
   /// Label for the app name in the technical details screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'App Name'**
+  /// **'App name'**
   String get aboutTechnicalScreenPackageInfoAppName;
 
   /// Label for the package name in the technical details screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'Package Name'**
+  /// **'Package name'**
   String get aboutTechnicalScreenPackageInfoPackageName;
 
   /// Label for the version in the technical details screen. This string is in MLA title case
@@ -226,13 +230,13 @@ abstract class MaterialHelperLocalizations {
   /// Label for the build number in the technical details screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'Build Number'**
+  /// **'Build number'**
   String get aboutTechnicalScreenPackageInfoBuildNumber;
 
   /// Label for the run time in the technical details screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'Running Time'**
+  /// **'Running time'**
   String get aboutTechnicalScreenPackageInfoRunningTime;
 
   /// Headline for the installation section in the technical details screen. This string is in MLA title case
@@ -244,25 +248,25 @@ abstract class MaterialHelperLocalizations {
   /// Label for the installer store in the technical details screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'App Installer'**
+  /// **'App installer'**
   String get aboutTechnicalScreenInstallationInstallerStore;
 
   /// Label for the install time in the technical details screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'First Install'**
+  /// **'First install'**
   String get aboutTechnicalScreenInstallationInstallTime;
 
   /// Label for the update time in the technical details screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'Last Update'**
+  /// **'Last update'**
   String get aboutTechnicalScreenInstallationUpdateTime;
 
   /// Headline for the git section in the technical details screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'Git'**
+  /// **'Source control'**
   String get aboutTechnicalScreenGitHeadline;
 
   /// Label for the git branch in the technical details screen. This string is in MLA title case
@@ -280,7 +284,7 @@ abstract class MaterialHelperLocalizations {
   /// Label for the local changes in the technical details screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'Local Changes'**
+  /// **'Local changes'**
   String get aboutTechnicalScreenGitLocalChanges;
 
   /// Label for the git commit in the technical details screen. This string is in MLA title case
@@ -295,11 +299,11 @@ abstract class MaterialHelperLocalizations {
   /// **'Message'**
   String get aboutTechnicalScreenGitCommitMessage;
 
-  /// Label for the git commit time in the technical details screen. This string is in MLA title case
+  /// Label for the git commit timestamp in the technical details screen. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'Time'**
-  String get aboutTechnicalScreenGitCommitTime;
+  /// **'Timestamp'**
+  String get aboutTechnicalScreenGitCommitTimestamp;
 
   /// Title of the licenses screen. This string is in MLA title case
   ///
@@ -310,7 +314,7 @@ abstract class MaterialHelperLocalizations {
   /// Title of the license details screen for a specific package. This string is in MLA title case
   ///
   /// In en, this message translates to:
-  /// **'Licenses of \"{packageName}\"'**
+  /// **'Licenses of “{packageName}”'**
   String licensesDetailsScreenTitle(String packageName);
 
   /// Default title of the settings screen. This string is in MLA title case
@@ -333,7 +337,7 @@ class _MaterialHelperLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en'].contains(locale.languageCode);
+      <String>['de', 'en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_MaterialHelperLocalizationsDelegate old) => false;
@@ -342,6 +346,8 @@ class _MaterialHelperLocalizationsDelegate
 MaterialHelperLocalizations lookupMaterialHelperLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'de':
+      return MaterialHelperLocalizationsDe();
     case 'en':
       return MaterialHelperLocalizationsEn();
   }

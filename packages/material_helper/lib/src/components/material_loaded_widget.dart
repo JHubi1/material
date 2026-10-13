@@ -1,17 +1,19 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import '../../material_helper.dart';
 
+enum MaterialLoadedWidgetAnimationStyle { none, fade, all }
+
 abstract class MaterialLoadedWidget extends StatelessWidget {
-  final bool enableAnimation;
+  final MaterialLoadedWidgetAnimationStyle animationStyle;
   final double loaderSize;
   final BoxConstraints? loaderConstraints;
   final Widget Function(BuildContext context, Widget child)? loaderBuilder;
 
   const MaterialLoadedWidget({
     super.key,
-    this.enableAnimation = false,
+    this.animationStyle = MaterialLoadedWidgetAnimationStyle.none,
     this.loaderSize = MaterialLoadingIndicatorSizes.large,
     this.loaderConstraints,
     this.loaderBuilder,
@@ -34,7 +36,7 @@ abstract class MaterialLoadedWidget extends StatelessWidget {
       fallback = loaderBuilder!(context, fallback);
     }
 
-    if (!enableAnimation) {
+    if (animationStyle == MaterialLoadedWidgetAnimationStyle.none) {
       return state ? child! : fallback;
     } else {
       final finalWidget = state
@@ -44,11 +46,15 @@ abstract class MaterialLoadedWidget extends StatelessWidget {
             )
           : fallback;
       return AnimatedSwitcher(
-        duration: Durations.medium4,
+        duration: animationStyle == MaterialLoadedWidgetAnimationStyle.all
+            ? Durations.medium4
+            : Durations.medium1,
         transitionBuilder: (child, animation) {
-          Widget widget = child;
+          var widget = child;
 
-          if (child.key == const ValueKey("content")) {
+          if (child.key == const ValueKey("content") &&
+              animationStyle == MaterialLoadedWidgetAnimationStyle.all &&
+              !animation.isForwardOrCompleted) {
             final curved = CurveTween(curve: Curves.easeInOutCubicEmphasized);
             widget = SlideTransition(
               position: Tween(
@@ -71,7 +77,7 @@ class MaterialChildLoadedWidget extends MaterialLoadedWidget {
   final Widget? child;
   const MaterialChildLoadedWidget({
     super.key,
-    super.enableAnimation,
+    super.animationStyle,
     super.loaderSize,
     super.loaderConstraints,
     super.loaderBuilder,
@@ -86,7 +92,7 @@ class MaterialLoadedWidgetBuilder extends MaterialLoadedWidget {
   final Widget? Function(BuildContext context) builder;
   const MaterialLoadedWidgetBuilder({
     super.key,
-    super.enableAnimation,
+    super.animationStyle,
     super.loaderSize,
     super.loaderConstraints,
     super.loaderBuilder,
@@ -101,10 +107,11 @@ class MaterialLoadedWidgetBuilder extends MaterialLoadedWidget {
 class MaterialFutureLoadedWidget<T> extends MaterialLoadedWidget {
   final Future<T> future;
   final Widget Function(BuildContext context, T value) builder;
+
   const MaterialFutureLoadedWidget({
     super.key,
     required this.future,
-    super.enableAnimation = true,
+    super.animationStyle = MaterialLoadedWidgetAnimationStyle.all,
     super.loaderSize,
     super.loaderConstraints,
     super.loaderBuilder,
@@ -123,7 +130,7 @@ class MaterialCompleterLoadedWidget<T> extends MaterialFutureLoadedWidget<T> {
   MaterialCompleterLoadedWidget({
     super.key,
     required Completer<T> completer,
-    super.enableAnimation,
+    super.animationStyle = MaterialLoadedWidgetAnimationStyle.all,
     super.loaderSize,
     super.loaderConstraints,
     super.loaderBuilder,
@@ -151,19 +158,34 @@ class _MaterialFutureLoadedWidgetBody<T> extends StatefulWidget {
 
 class _MaterialFutureLoadedWidgetBodyState<T>
     extends State<_MaterialFutureLoadedWidgetBody<T>> {
+  int _futureLock = 0;
+
   bool isLoaded = false;
   T? value;
 
   @override
   void initState() {
-    widget.future.then((value) {
-      if (!mounted) return;
-      isLoaded = true;
-      this.value = value;
-      setState(() {});
-    });
+    widget.future.then(_processFuture(_futureLock));
     super.initState();
   }
+
+  @override
+  void didUpdateWidget(covariant _MaterialFutureLoadedWidgetBody<T> oldWidget) {
+    if (oldWidget.future != widget.future) {
+      _futureLock++;
+      isLoaded = false;
+      value = null;
+      widget.future.then(_processFuture(_futureLock));
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void Function(T value) _processFuture(int lock) => (T value) {
+    if (!mounted || _futureLock != lock) return;
+    isLoaded = true;
+    this.value = value;
+    if (mounted) setState(() {});
+  };
 
   @override
   Widget build(BuildContext context) => widget.buildLoader(

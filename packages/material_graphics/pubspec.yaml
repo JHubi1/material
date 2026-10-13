@@ -4,25 +4,34 @@ publish_to: none
 
 environment:
   sdk: ^3.9.2
-  flutter: ">=1.17.0"
 resolution: workspace
 
 dependencies:
   flutter:
     sdk: flutter
+  material_ui: ^1.6.0
   material_helper: any
   vector_math: ^2.2.0
-  simple_icons: ^14.6.1
+  simple_icons: ^16.23.0
+  material_new_shapes: ^1.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   fonts:
+    - family: BagelFatOne
+      fonts:
+        - asset: assets/fonts/BagelFatOne-Regular.ttf
     - family: GoogleSansCode
       fonts:
         - asset: assets/fonts/GoogleSansCode.ttf
         - asset: assets/fonts/GoogleSansCode-Italic.ttf
           style: italic
+    - family: GoogleSansFlex
+      fonts:
+        - asset: assets/fonts/GoogleSansFlex-VariableFont_GRAD,ROND,opsz,slnt,wdth,wght.ttf
+  assets:
+    - assets/fonts/OFL.txt

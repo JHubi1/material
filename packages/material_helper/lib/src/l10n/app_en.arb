@@ -69,32 +69,32 @@
             }
         }
     },
-    "aboutScreenLinksHeadline": "Links",
-    "@aboutScreenLinksHeadline": {
-        "description": "Headline for the links section in the about screen. This string is in MLA title case",
-        "context": "Screen:About:Links"
+    "aboutScreenReferencesHeadline": "References",
+    "@aboutScreenReferencesHeadline": {
+        "description": "Headline for the references section in the about screen. This string is in MLA title case",
+        "context": "Screen:About:References"
     },
-    "aboutScreenLinksGitHub": "GitHub",
-    "@aboutScreenLinksGitHub": {
+    "aboutScreenReferencesGitHub": "GitHub",
+    "@aboutScreenReferencesGitHub": {
         "description": "Label for the GitHub link in the about screen. This string is in MLA title case",
-        "context": "Screen:About:Links"
+        "context": "Screen:About:References"
     },
-    "aboutScreenLinksCreateIssue": "Create an Issue",
-    "@aboutScreenLinksCreateIssue": {
+    "aboutScreenReferencesCreateIssue": "Create an issue",
+    "@aboutScreenReferencesCreateIssue": {
         "description": "Label for the report issue link in the about screen. This string is in MLA title case",
-        "context": "Screen:About:Links"
+        "context": "Screen:About:References"
     },
-    "aboutScreenLinksCreateIssueSubtitle": "Report a bug or suggest a feature.",
-    "@aboutScreenLinksCreateIssueSubtitle": {
+    "aboutScreenReferencesCreateIssueSubtitle": "Report a bug or suggest a feature.",
+    "@aboutScreenReferencesCreateIssueSubtitle": {
         "description": "Description for the report issue link in the about screen",
-        "context": "Screen:About:Links"
+        "context": "Screen:About:References"
     },
-    "aboutScreenLinksLicenses": "Licenses",
-    "@aboutScreenLinksLicenses": {
+    "aboutScreenReferencesLicenses": "Licenses",
+    "@aboutScreenReferencesLicenses": {
         "description": "Label for the licenses link in the about screen. This string is in MLA title case",
-        "context": "Screen:About:Links"
+        "context": "Screen:About:References"
     },
-    "aboutScreenOtherAppsHeadline": "Other Apps",
+    "aboutScreenOtherAppsHeadline": "Other apps",
     "@aboutScreenOtherAppsHeadline": {
         "description": "Headline for the other apps section in the about screen. This string is in MLA title case",
         "context": "Screen:About:OtherApps"
@@ -104,12 +104,12 @@
         "description": "Title of the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical"
     },
-    "aboutTechnicalScreenPackageInfoAppName": "App Name",
+    "aboutTechnicalScreenPackageInfoAppName": "App name",
     "@aboutTechnicalScreenPackageInfoAppName": {
         "description": "Label for the app name in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:PackageInfo"
     },
-    "aboutTechnicalScreenPackageInfoPackageName": "Package Name",
+    "aboutTechnicalScreenPackageInfoPackageName": "Package name",
     "@aboutTechnicalScreenPackageInfoPackageName": {
         "description": "Label for the package name in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:PackageInfo"
@@ -119,12 +119,12 @@
         "description": "Label for the version in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:PackageInfo"
     },
-    "aboutTechnicalScreenPackageInfoBuildNumber": "Build Number",
+    "aboutTechnicalScreenPackageInfoBuildNumber": "Build number",
     "@aboutTechnicalScreenPackageInfoBuildNumber": {
         "description": "Label for the build number in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:PackageInfo"
     },
-    "aboutTechnicalScreenPackageInfoRunningTime": "Running Time",
+    "aboutTechnicalScreenPackageInfoRunningTime": "Running time",
     "@aboutTechnicalScreenPackageInfoRunningTime": {
         "description": "Label for the run time in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:PackageInfo"
@@ -134,22 +134,22 @@
         "description": "Headline for the installation section in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:Installation"
     },
-    "aboutTechnicalScreenInstallationInstallerStore": "App Installer",
+    "aboutTechnicalScreenInstallationInstallerStore": "App installer",
     "@aboutTechnicalScreenInstallationInstallerStore": {
         "description": "Label for the installer store in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:Installation"
     },
-    "aboutTechnicalScreenInstallationInstallTime": "First Install",
+    "aboutTechnicalScreenInstallationInstallTime": "First install",
     "@aboutTechnicalScreenInstallationInstallTime": {
         "description": "Label for the install time in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:Installation"
     },
-    "aboutTechnicalScreenInstallationUpdateTime": "Last Update",
+    "aboutTechnicalScreenInstallationUpdateTime": "Last update",
     "@aboutTechnicalScreenInstallationUpdateTime": {
         "description": "Label for the update time in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:Installation"
     },
-    "aboutTechnicalScreenGitHeadline": "Git",
+    "aboutTechnicalScreenGitHeadline": "Source control",
     "@aboutTechnicalScreenGitHeadline": {
         "description": "Headline for the git section in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:Git"
@@ -164,7 +164,7 @@
         "description": "Label for the git branch revision in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:Git"
     },
-    "aboutTechnicalScreenGitLocalChanges": "Local Changes",
+    "aboutTechnicalScreenGitLocalChanges": "Local changes",
     "@aboutTechnicalScreenGitLocalChanges": {
         "description": "Label for the local changes in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:Git"
@@ -179,9 +179,9 @@
         "description": "Label for the git commit message in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:Git"
     },
-    "aboutTechnicalScreenGitCommitTime": "Time",
-    "@aboutTechnicalScreenGitCommitTime": {
-        "description": "Label for the git commit time in the technical details screen. This string is in MLA title case",
+    "aboutTechnicalScreenGitCommitTimestamp": "Timestamp",
+    "@aboutTechnicalScreenGitCommitTimestamp": {
+        "description": "Label for the git commit timestamp in the technical details screen. This string is in MLA title case",
         "context": "Screen:AboutTechnical:Git"
     },
     "licensesScreenTitle": "Licenses",
@@ -189,7 +189,7 @@
         "description": "Title of the licenses screen. This string is in MLA title case",
         "context": "Screen:Licenses"
     },
-    "licensesDetailsScreenTitle": "Licenses of \"{packageName}\"",
+    "licensesDetailsScreenTitle": "Licenses of “{packageName}”",
     "@licensesDetailsScreenTitle": {
         "description": "Title of the license details screen for a specific package. This string is in MLA title case",
         "context": "Screen:LicensesDetails",

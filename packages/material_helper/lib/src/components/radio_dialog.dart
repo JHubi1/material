@@ -1,9 +1,11 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
+import 'scrolling_alert_dialog.dart';
 
 typedef RadioDialogObjectGenerator<T, E> = E Function(T item);
 
-extension on String {
+extension StringCapitalization on String {
   String capitalize() {
     if (isEmpty) return this;
     return this[0].toUpperCase() + substring(1);
@@ -53,6 +55,9 @@ class RadioDialog<T extends Object> extends StatefulWidget {
   /// A function that generates the icon for each item.
   final RadioDialogObjectGenerator<T, Widget?>? iconGenerator;
 
+  /// A function that generates the enabled state for each item.
+  final RadioDialogObjectGenerator<T, bool>? enabledGenerator;
+
   /// The semantic label of the dialog used by accessibility frameworks to
   /// announce screen transitions when the dialog is opened and closed.
   ///
@@ -90,8 +95,10 @@ class RadioDialog<T extends Object> extends StatefulWidget {
 
   /// Called when the user submits the dialog.
   ///
-  /// This does not provide the selected value, but is just available as a hook.
-  /// The selected value is returned via [Navigator.pop].
+  /// This should not be used to receive the selected value, instead it is
+  /// supposed to only be used to differentiate between the user submitting the
+  /// dialog without selecting an item (with [allowEmptySelection] set to true)
+  /// and the user dismissing the dialog without submitting.
   final ValueChanged<T?>? onSubmit;
 
   RadioDialog({
@@ -105,6 +112,7 @@ class RadioDialog<T extends Object> extends StatefulWidget {
     this.titleGenerator,
     this.subtitleGenerator,
     this.iconGenerator,
+    this.enabledGenerator,
     this.semanticLabel,
     this.alignment,
     this.toggleable = false,
@@ -122,128 +130,75 @@ class RadioDialog<T extends Object> extends StatefulWidget {
 class _RadioDialogState<T extends Object> extends State<RadioDialog<T>> {
   T? _value;
 
-  late final ScrollController _scrollController;
-  bool _hasTopScroll = false;
-  bool _hasBottomScroll = false;
-
   @override
   void initState() {
     super.initState();
     _value = widget.initialValue;
-    _scrollController = ScrollController()..addListener(onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) => onScroll());
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void onScroll() {
-    if (!_scrollController.hasClients) return;
-    final hasTopScroll =
-        _scrollController.position.pixels >
-        _scrollController.position.minScrollExtent;
-    final hasBottomScroll =
-        _scrollController.position.pixels <
-        _scrollController.position.maxScrollExtent;
-    if (hasTopScroll != _hasTopScroll || hasBottomScroll != _hasBottomScroll) {
-      _hasTopScroll = hasTopScroll;
-      _hasBottomScroll = hasBottomScroll;
-      if (mounted) setState(() {});
-    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = ColorScheme.of(context);
-    final divider = Divider(
-      key: UniqueKey(),
-      height: 0,
-      color: colorScheme.outline,
-    );
-    return AlertDialog(
+    return ScrollingAlertDialog(
       icon: widget.icon,
       iconColor: widget.iconColor,
       title: Text(widget.title),
       semanticLabel: widget.semanticLabel,
       alignment: widget.alignment,
-      contentPadding: EdgeInsets.symmetric(vertical: 16),
-
-      content: SizedBox(
-        width: MediaQuery.sizeOf(context).width,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (widget.description != null)
-              Padding(
-                padding: const EdgeInsets.only(left: 24, right: 24),
-                child: Transform.translate(
-                  offset: Offset(0, -16),
-                  child: Text(widget.description!),
-                ),
+      contentPadding: EdgeInsets.zero,
+      leading: widget.description != null
+          ? Padding(
+              padding: const EdgeInsets.only(left: 24, right: 24),
+              child: Transform.translate(
+                offset: Offset(0, -16),
+                child: Text(widget.description!),
               ),
-            AnimatedSwitcher(
-              duration: Durations.short2,
-              switchInCurve: Curves.fastEaseInToSlowEaseOut,
-              switchOutCurve: Curves.fastEaseInToSlowEaseOut.flipped,
-              child: _hasTopScroll ? divider : null,
-            ),
-            Flexible(
-              child: RadioGroup<T>(
-                groupValue: _value,
-                onChanged: (value) => setState(() => _value = value),
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(widget.items.length, (index) {
-                      final item = widget.items.elementAt(index);
-                      final title =
-                          widget.titleGenerator?.call(item) ??
-                          radioDialogDefaultTitleGenerator(item);
-                      final subtitle = widget.subtitleGenerator?.call(item);
-                      final icon = widget.iconGenerator?.call(item);
-                      return ListTile(
-                        leading: IgnorePointer(
-                          child: ExcludeFocus(
-                            child: SizedBox.square(
-                              dimension: 24,
-                              child: Radio<T>(
-                                value: item,
-                                toggleable: widget.toggleable,
-                              ),
-                            ),
-                          ),
-                        ),
-                        title: Text(title),
-                        subtitle: subtitle != null ? Text(subtitle) : null,
-                        trailing: icon,
-                        selected: item == _value,
-                        minTileHeight: 48,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 24),
-                        onTap: () {
-                          if (widget.toggleable && item == _value) {
-                            setState(() => _value = null);
-                          } else {
-                            setState(() => _value = item);
-                          }
-                        },
-                      );
-                    }),
+            )
+          : null,
+      content: ClipRRect(
+        child: RadioGroup<T>(
+          groupValue: _value,
+          onChanged: (value) => setState(() => _value = value),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(widget.items.length, (index) {
+              final item = widget.items.elementAt(index);
+              final title =
+                  widget.titleGenerator?.call(item) ??
+                  radioDialogDefaultTitleGenerator(item);
+              final subtitle = widget.subtitleGenerator?.call(item);
+              final icon = widget.iconGenerator?.call(item);
+              final enabled = widget.enabledGenerator?.call(item) ?? true;
+              return ListTile(
+                leading: IgnorePointer(
+                  child: ExcludeFocus(
+                    child: SizedBox.square(
+                      dimension: 24,
+                      child: Radio<T>(
+                        value: item,
+                        toggleable: widget.toggleable,
+                        enabled: enabled,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ),
-            AnimatedSwitcher(
-              duration: Durations.short2,
-              switchInCurve: Curves.fastEaseInToSlowEaseOut,
-              switchOutCurve: Curves.fastEaseInToSlowEaseOut.flipped,
-              child: _hasBottomScroll ? divider : null,
-            ),
-          ],
+                title: Text(title),
+                subtitle: subtitle != null ? Text(subtitle) : null,
+                trailing: icon,
+                enabled: enabled,
+                selected: item == _value,
+                minTileHeight: 48,
+                contentPadding: EdgeInsets.symmetric(horizontal: 24),
+                onTap: enabled
+                    ? () {
+                        _value = widget.toggleable && item == _value
+                            ? null
+                            : item;
+                        if (mounted) setState(() {});
+                      }
+                    : null,
+              );
+            }),
+          ),
         ),
       ),
       actions: [
@@ -276,6 +231,7 @@ Future<T?> showRadioDialog<T extends Object>({
   RadioDialogObjectGenerator<T, String>? titleGenerator,
   RadioDialogObjectGenerator<T, String>? subtitleGenerator,
   RadioDialogObjectGenerator<T, Widget?>? iconGenerator,
+  RadioDialogObjectGenerator<T, bool>? enabledGenerator,
   String? semanticLabel,
   AlignmentGeometry? alignment,
   bool toggleable = false,
@@ -294,6 +250,7 @@ Future<T?> showRadioDialog<T extends Object>({
       titleGenerator: titleGenerator,
       subtitleGenerator: subtitleGenerator,
       iconGenerator: iconGenerator,
+      enabledGenerator: enabledGenerator,
       semanticLabel: semanticLabel,
       alignment: alignment,
       toggleable: toggleable,

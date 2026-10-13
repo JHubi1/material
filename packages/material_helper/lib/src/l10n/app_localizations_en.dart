@@ -46,56 +46,56 @@ class MaterialHelperLocalizationsEn extends MaterialHelperLocalizations {
   }
 
   @override
-  String get aboutScreenLinksHeadline => 'Links';
+  String get aboutScreenReferencesHeadline => 'References';
 
   @override
-  String get aboutScreenLinksGitHub => 'GitHub';
+  String get aboutScreenReferencesGitHub => 'GitHub';
 
   @override
-  String get aboutScreenLinksCreateIssue => 'Create an Issue';
+  String get aboutScreenReferencesCreateIssue => 'Create an issue';
 
   @override
-  String get aboutScreenLinksCreateIssueSubtitle =>
+  String get aboutScreenReferencesCreateIssueSubtitle =>
       'Report a bug or suggest a feature.';
 
   @override
-  String get aboutScreenLinksLicenses => 'Licenses';
+  String get aboutScreenReferencesLicenses => 'Licenses';
 
   @override
-  String get aboutScreenOtherAppsHeadline => 'Other Apps';
+  String get aboutScreenOtherAppsHeadline => 'Other apps';
 
   @override
   String get aboutTechnicalScreenTitle => 'Technical Details';
 
   @override
-  String get aboutTechnicalScreenPackageInfoAppName => 'App Name';
+  String get aboutTechnicalScreenPackageInfoAppName => 'App name';
 
   @override
-  String get aboutTechnicalScreenPackageInfoPackageName => 'Package Name';
+  String get aboutTechnicalScreenPackageInfoPackageName => 'Package name';
 
   @override
   String get aboutTechnicalScreenPackageInfoVersion => 'Version';
 
   @override
-  String get aboutTechnicalScreenPackageInfoBuildNumber => 'Build Number';
+  String get aboutTechnicalScreenPackageInfoBuildNumber => 'Build number';
 
   @override
-  String get aboutTechnicalScreenPackageInfoRunningTime => 'Running Time';
+  String get aboutTechnicalScreenPackageInfoRunningTime => 'Running time';
 
   @override
   String get aboutTechnicalScreenInstallationHeadline => 'Installation';
 
   @override
-  String get aboutTechnicalScreenInstallationInstallerStore => 'App Installer';
+  String get aboutTechnicalScreenInstallationInstallerStore => 'App installer';
 
   @override
-  String get aboutTechnicalScreenInstallationInstallTime => 'First Install';
+  String get aboutTechnicalScreenInstallationInstallTime => 'First install';
 
   @override
-  String get aboutTechnicalScreenInstallationUpdateTime => 'Last Update';
+  String get aboutTechnicalScreenInstallationUpdateTime => 'Last update';
 
   @override
-  String get aboutTechnicalScreenGitHeadline => 'Git';
+  String get aboutTechnicalScreenGitHeadline => 'Source control';
 
   @override
   String get aboutTechnicalScreenGitBranch => 'Branch';
@@ -104,7 +104,7 @@ class MaterialHelperLocalizationsEn extends MaterialHelperLocalizations {
   String get aboutTechnicalScreenGitBranchRevision => 'Revision';
 
   @override
-  String get aboutTechnicalScreenGitLocalChanges => 'Local Changes';
+  String get aboutTechnicalScreenGitLocalChanges => 'Local changes';
 
   @override
   String get aboutTechnicalScreenGitCommit => 'Commit';
@@ -113,14 +113,14 @@ class MaterialHelperLocalizationsEn extends MaterialHelperLocalizations {
   String get aboutTechnicalScreenGitCommitMessage => 'Message';
 
   @override
-  String get aboutTechnicalScreenGitCommitTime => 'Time';
+  String get aboutTechnicalScreenGitCommitTimestamp => 'Timestamp';
 
   @override
   String get licensesScreenTitle => 'Licenses';
 
   @override
   String licensesDetailsScreenTitle(String packageName) {
-    return 'Licenses of \"$packageName\"';
+    return 'Licenses of “$packageName”';
   }
 
   @override

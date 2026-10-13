@@ -8,8 +8,8 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart' show clampDouble;
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:material_ui/material_ui.dart';
 
 EdgeInsetsGeometryTween _defaultPaddingTween({
   required bool effectiveCenterTitle,
@@ -33,7 +33,10 @@ class MaterialFlexibleSpaceBar extends StatefulWidget {
     this.collapseMode = CollapseMode.parallax,
     this.stretchModes = const <StretchMode>[StretchMode.zoomBackground],
     this.expandedTitleScale = 1.5,
-  }) : assert(expandedTitleScale >= 1);
+  }) : assert(
+         expandedTitleScale >= 1,
+         "expandedTitleScale must be greater than or equal to 1.",
+       );
 
   final Widget? title;
   final Widget? background;
@@ -78,7 +81,7 @@ class _MaterialFlexibleSpaceBarState extends State<MaterialFlexibleSpaceBar> {
       case CollapseMode.none:
         return 0.0;
       case CollapseMode.parallax:
-        final double deltaExtent = settings.maxExtent - settings.minExtent;
+        final deltaExtent = settings.maxExtent - settings.minExtent;
         return -Tween<double>(begin: 0.0, end: deltaExtent / 4.0).transform(t);
     }
   }
@@ -87,14 +90,14 @@ class _MaterialFlexibleSpaceBarState extends State<MaterialFlexibleSpaceBar> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        final FlexibleSpaceBarSettings settings = context
+        final settings = context
             .dependOnInheritedWidgetOfExactType<FlexibleSpaceBarSettings>()!;
 
-        final List<Widget> children = <Widget>[];
+        final children = <Widget>[];
 
-        final double deltaExtent = settings.maxExtent - settings.minExtent;
+        final deltaExtent = settings.maxExtent - settings.minExtent;
 
-        final double t = clampDouble(
+        final t = clampDouble(
           1.0 - (settings.currentExtent - settings.minExtent) / deltaExtent,
           0.0,
           1.0,
@@ -105,18 +108,21 @@ class _MaterialFlexibleSpaceBarState extends State<MaterialFlexibleSpaceBar> {
             0.0,
             1.0 - kToolbarHeight / deltaExtent,
           );
-          const double fadeEnd = 1.0;
-          assert(fadeStart <= fadeEnd);
-          final double opacity = settings.maxExtent == settings.minExtent
+          const fadeEnd = 1.0;
+          assert(
+            fadeStart <= fadeEnd,
+            "fadeStart must be less than or equal to fadeEnd",
+          );
+          final opacity = settings.maxExtent == settings.minExtent
               ? 1.0
               : 1.0 - Interval(fadeStart, fadeEnd).transform(t);
-          double height = settings.maxExtent;
+          var height = settings.maxExtent;
 
           if (widget.stretchModes.contains(StretchMode.zoomBackground) &&
               constraints.maxHeight > height) {
             height = constraints.maxHeight;
           }
-          final double topPadding = _getCollapsePadding(t, settings);
+          final topPadding = _getCollapsePadding(t, settings);
           children.add(
             Positioned(
               top: topPadding,
@@ -133,7 +139,7 @@ class _MaterialFlexibleSpaceBarState extends State<MaterialFlexibleSpaceBar> {
 
           if (widget.stretchModes.contains(StretchMode.blurBackground) &&
               constraints.maxHeight > settings.maxExtent) {
-            final double blurAmount =
+            final blurAmount =
                 (constraints.maxHeight - settings.maxExtent) / 10;
             children.add(
               Positioned.fill(
@@ -150,7 +156,7 @@ class _MaterialFlexibleSpaceBarState extends State<MaterialFlexibleSpaceBar> {
         }
 
         if (widget.title != null) {
-          final ThemeData theme = Theme.of(context);
+          final theme = Theme.of(context);
 
           Widget? title;
           switch (theme.platform) {
@@ -166,7 +172,7 @@ class _MaterialFlexibleSpaceBarState extends State<MaterialFlexibleSpaceBar> {
 
           if (widget.stretchModes.contains(StretchMode.fadeTitle) &&
               constraints.maxHeight > settings.maxExtent) {
-            final double stretchOpacity =
+            final stretchOpacity =
                 1 -
                 clampDouble(
                   (constraints.maxHeight - settings.maxExtent) / 100,
@@ -176,19 +182,17 @@ class _MaterialFlexibleSpaceBarState extends State<MaterialFlexibleSpaceBar> {
             title = Opacity(opacity: stretchOpacity, child: title);
           }
 
-          final double opacity = settings.toolbarOpacity;
+          final opacity = settings.toolbarOpacity;
           if (opacity > 0.0) {
-            TextStyle titleStyle = theme.useMaterial3
+            var titleStyle = theme.useMaterial3
                 ? theme.textTheme.titleLarge!
                 : theme.primaryTextTheme.titleLarge!;
             titleStyle = titleStyle.copyWith(
               color: titleStyle.color!.withValues(alpha: opacity),
             );
-            final bool effectiveCenterTitle = _getEffectiveCenterTitle(theme);
-            final double leadingPadding = (settings.hasLeading ?? true)
-                ? 72.0
-                : 0.0;
-            final EdgeInsetsGeometry padding =
+            final effectiveCenterTitle = _getEffectiveCenterTitle(theme);
+            final leadingPadding = (settings.hasLeading ?? true) ? 72.0 : 0.0;
+            final padding =
                 widget.titlePadding ??
                 (widget.titlePaddingTween ??
                         _defaultPaddingTween(
@@ -197,15 +201,13 @@ class _MaterialFlexibleSpaceBarState extends State<MaterialFlexibleSpaceBar> {
                         ))
                     .chain(CurveTween(curve: Curves.easeInSine))
                     .transform(t);
-            final double scaleValue = Tween<double>(
+            final scaleValue = Tween<double>(
               begin: widget.expandedTitleScale,
               end: 1.0,
             ).chain(CurveTween(curve: Curves.easeInSine)).transform(t);
-            final Matrix4 scaleTransform = Matrix4.identity()
+            final scaleTransform = Matrix4.identity()
               ..scaleByDouble(scaleValue, scaleValue, 1.0, 1);
-            final Alignment titleAlignment = _getTitleAlignment(
-              effectiveCenterTitle,
-            );
+            final titleAlignment = _getTitleAlignment(effectiveCenterTitle);
             children.add(
               Padding(
                 padding: padding,
@@ -289,7 +291,7 @@ class _RenderFlexibleSpaceHeaderOpacity extends RenderOpacity {
       layer = null;
       return;
     }
-    assert(needsCompositing);
+    assert(needsCompositing, "The render object needs compositing.");
     layer = context.pushOpacity(
       offset,
       (opacity * 255).round(),
@@ -299,6 +301,6 @@ class _RenderFlexibleSpaceHeaderOpacity extends RenderOpacity {
     assert(() {
       layer!.debugCreator = debugCreator;
       return true;
-    }());
+    }(), "");
   }
 }

@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
-import '../l10n/app_localizations.dart';
-import '../l10n/app_localizations_en.dart';
 import '../../material_helper.dart';
+import '../l10n/app_localizations_en.dart';
 
 typedef SettingsScreenWidgetBuilder =
     Widget Function(BuildContext context, SettingsScreenBuildEvent event);
@@ -265,7 +264,7 @@ class SplitSwitchSettingsOption extends SwitchSettingsOption {
         : null;
     return MaterialSplitSwitchListTile(
       value: value,
-      onTap: () => event.openNewScreen(() => newScreen.call()),
+      onTap: () => event.openNewScreen(newScreen.call),
       onChanged: effectiveOnChanged,
       secondary: icon,
       title: Text(title),
@@ -338,7 +337,7 @@ class InputSettingsOption extends SettingsOption {
             : event.unavailableCharacter,
       ),
       onTap: () async {
-        var res = await showPromptDialog(
+        final res = await showPromptDialog(
           context: context,
           title: dialogTitle ?? localizations.setValue(title),
           description: dialogSubtitle,
@@ -363,7 +362,12 @@ class InputSettingsOption extends SettingsOption {
         onChanged(res);
         event.onChanged();
       },
-      onLongPress: allowEmpty ? () => onChanged("") : null,
+      onLongPress: allowEmpty
+          ? () {
+              onChanged("");
+              event.onChanged();
+            }
+          : null,
     );
   }
 }
@@ -432,6 +436,7 @@ class RadioSettingsOption<T extends Object> extends SettingsOption {
   final RadioDialogObjectGenerator<T, String>? titleGenerator;
   final RadioDialogObjectGenerator<T, String>? subtitleGenerator;
   final RadioDialogObjectGenerator<T, Widget?>? iconGenerator;
+  final RadioDialogObjectGenerator<T, bool>? enabledGenerator;
 
   final ValueChanged<T?> onChanged;
   final bool allowEmpty;
@@ -446,6 +451,7 @@ class RadioSettingsOption<T extends Object> extends SettingsOption {
     this.titleGenerator,
     this.subtitleGenerator,
     this.iconGenerator,
+    this.enabledGenerator,
     required this.onChanged,
     this.allowEmpty = false,
   });
@@ -464,10 +470,8 @@ class RadioSettingsOption<T extends Object> extends SettingsOption {
             : event.unavailableCharacter,
       ),
       onTap: () async {
-        bool didSubmit = false;
-        T? res;
-
-        await showRadioDialog<T>(
+        var didSubmit = false;
+        final res = await showRadioDialog<T>(
           context: context,
           title: dialogTitle ?? localizations.setValue(title),
           description: dialogSubtitle,
@@ -476,19 +480,95 @@ class RadioSettingsOption<T extends Object> extends SettingsOption {
           titleGenerator: titleGenerator,
           subtitleGenerator: subtitleGenerator,
           iconGenerator: iconGenerator,
+          enabledGenerator: enabledGenerator,
           toggleable: allowEmpty,
           allowEmptySelection: allowEmpty,
-          onSubmit: (value) {
-            didSubmit = true;
-            res = value;
-          },
+          onSubmit: (_) => didSubmit = true,
         );
 
         if (!didSubmit || res == value) return;
         onChanged(res);
         event.onChanged();
       },
-      onLongPress: allowEmpty ? () => onChanged(null) : null,
+      onLongPress: allowEmpty
+          ? () {
+              onChanged(null);
+              event.onChanged();
+            }
+          : null,
+    );
+  }
+}
+
+class CheckSettingsOption<T extends Object> extends SettingsOption {
+  final String? dialogTitle;
+  final String? dialogSubtitle;
+
+  final Iterable<T> value;
+  final Iterable<T> items;
+
+  final RadioDialogObjectGenerator<T, String>? titleGenerator;
+  final RadioDialogObjectGenerator<T, String>? subtitleGenerator;
+  final RadioDialogObjectGenerator<T, Widget?>? iconGenerator;
+  final RadioDialogObjectGenerator<T, bool>? enabledGenerator;
+
+  final ValueChanged<Set<T>> onChanged;
+  final bool allowEmpty;
+
+  const CheckSettingsOption({
+    super.icon,
+    required super.title,
+    this.dialogTitle,
+    this.dialogSubtitle,
+    required this.value,
+    required this.items,
+    this.titleGenerator,
+    this.subtitleGenerator,
+    this.iconGenerator,
+    this.enabledGenerator,
+    required this.onChanged,
+    this.allowEmpty = false,
+  });
+
+  @override
+  Widget build(BuildContext context, SettingsScreenBuildEvent event) {
+    final localizations =
+        MaterialHelperLocalizations.of(context) ??
+        MaterialHelperLocalizationsEn();
+    return MaterialListTile(
+      leading: icon,
+      title: Text(title),
+      subtitle: Text(
+        value.isNotEmpty
+            ? checkDialogDefaultTitleGenerator(value)
+            : event.unavailableCharacter,
+      ),
+      onTap: () async {
+        var didSubmit = false;
+        final res = await showCheckDialog<T>(
+          context: context,
+          title: dialogTitle ?? localizations.setValue(title),
+          description: dialogSubtitle,
+          initialValue: value,
+          items: items,
+          titleGenerator: titleGenerator,
+          subtitleGenerator: subtitleGenerator,
+          iconGenerator: iconGenerator,
+          enabledGenerator: enabledGenerator,
+          allowEmptySelection: allowEmpty,
+          onSubmit: (_) => didSubmit = true,
+        );
+
+        if (!didSubmit || res == value) return;
+        onChanged(res ?? {});
+        event.onChanged();
+      },
+      onLongPress: allowEmpty
+          ? () {
+              onChanged({});
+              event.onChanged();
+            }
+          : null,
     );
   }
 }

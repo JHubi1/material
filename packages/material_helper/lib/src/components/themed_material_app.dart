@@ -1,11 +1,14 @@
-import 'package:dynamic_system_colors/dynamic_system_colors.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_graphics/material_graphics.dart'
+    show ModifiedTextTheme;
+import 'package:material_graphics/material_graphics.dart' as mg;
+import 'package:material_ui/material_ui.dart';
 
 import '../../material_helper.dart';
 
 /// The theme fallback color.
-final Color _fallbackColor = Colors.lime;
+Color materialAppsFallbackColor = Colors.lime;
 
 /// Stopwatch that measures the app's run time.
 final Stopwatch runningTime = Stopwatch()..start();
@@ -192,6 +195,8 @@ class ThemedMaterialApp extends StatefulWidget {
   ///    applications.
   ///  * [GlobalMaterialLocalizations], a [localizationsDelegates] value
   ///    which provides material localizations for many languages.
+  ///  * [MaterialHelperLocalizations], a [localizationsDelegates] value
+  ///    which provides material helper localizations for many languages.
   ///  * The Flutter Internationalization Tutorial,
   ///    <https://flutter.dev/to/internationalization/>.
   final Iterable<Locale> supportedLocales;
@@ -300,6 +305,7 @@ class _ThemedMaterialAppState extends State<ThemedMaterialApp> {
     super.initState();
     ThemePreferences.instance.addListener(onUpdate);
     runningTime.start();
+    mg.registerLicenses(context);
   }
 
   @override
@@ -339,7 +345,9 @@ class _ThemedMaterialAppState extends State<ThemedMaterialApp> {
                   )
                 : ThemeData.from(
                     colorScheme: _colorSchemeOverride(
-                      ColorScheme.fromSeed(seedColor: _fallbackColor),
+                      ColorScheme.fromSeed(
+                        seedColor: materialAppsFallbackColor,
+                      ),
                     ),
                   ),
           ),
@@ -349,7 +357,7 @@ class _ThemedMaterialAppState extends State<ThemedMaterialApp> {
                 : ThemeData.from(
                     colorScheme: _colorSchemeOverride(
                       ColorScheme.fromSeed(
-                        seedColor: _fallbackColor,
+                        seedColor: materialAppsFallbackColor,
                         brightness: Brightness.dark,
                       ),
                     ),
@@ -371,12 +379,14 @@ class _ThemedMaterialAppState extends State<ThemedMaterialApp> {
     return scheme.copyWith(
       surface: scheme.brightness == Brightness.light
           ? scheme.surfaceContainerHigh
-          : scheme.surfaceContainerLow,
+          // : scheme.surfaceContainerLow,
+          : null,
     );
   }
 
   ThemeData _themeOverride(ThemeData data) {
     return data.copyWith(
+      textTheme: data.textTheme.material,
       listTileTheme: ListTileThemeData(
         contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 24),
       ),

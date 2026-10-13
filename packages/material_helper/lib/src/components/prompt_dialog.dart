@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+
 import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/app_localizations_en.dart';
@@ -260,7 +261,7 @@ class _PromptDialogState extends State<PromptDialog> {
     (_) => focusNode.requestFocus(),
   );
 
-  void submit() async {
+  Future<void> submit() async {
     setState(() {
       errorText = null;
       loadingValidation = true;
@@ -288,7 +289,7 @@ class _PromptDialogState extends State<PromptDialog> {
     return widget.quickValidator!.call(controller.text);
   }
 
-  void invokeAction() async {
+  Future<void> invokeAction() async {
     setState(() => errorText = null);
 
     var doSubmit = false;
@@ -328,6 +329,7 @@ class _PromptDialogState extends State<PromptDialog> {
         alignment: widget.alignment,
         scrollable: true,
         contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        constraints: BoxConstraints(minWidth: 280, maxWidth: 560),
 
         content: SizedBox(
           width: MediaQuery.sizeOf(context).width,

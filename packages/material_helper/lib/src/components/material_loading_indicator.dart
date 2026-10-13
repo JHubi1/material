@@ -1,9 +1,8 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
 import 'package:material_graphics/material_graphics.dart';
-import 'package:material_graphics/rounded_polygon.dart';
+import 'package:material_ui/material_ui.dart';
 
 enum MaterialLoadingIndicatorStyle { normal, contained }
 
@@ -33,27 +32,27 @@ class _MaterialLoadingIndicatorState extends State<MaterialLoadingIndicator>
   final _sre = 180.0;
   var _loadingIndicatorIndex = 0;
   late final _loadingIndicatorShapes = [
-    (MaterialShapes.softBurst as RoundedPolygonBorder).copy(
-      (p) => p.transformed(MaterialTransforms.rotateDegrees(-_sre)),
-    ),
-    (MaterialShapes.cookie9Sided as RoundedPolygonBorder).copy(
-      (p) => p.transformed(MaterialTransforms.rotateDegrees(-_sre)),
-    ),
-    (MaterialShapes.pentagon as RoundedPolygonBorder).copy(
-      (p) => p.transformed(MaterialTransforms.rotateDegrees(-18 - _sre)),
-    ),
-    (MaterialShapes.pill as RoundedPolygonBorder).copy(
-      (p) => p.transformed(MaterialTransforms.rotateDegrees(60 - _sre)),
-    ),
-    (MaterialShapes.sunny as RoundedPolygonBorder).copy(
-      (p) => p.transformed(MaterialTransforms.rotateDegrees(5 - _sre)),
-    ),
-    (MaterialShapes.cookie4Sided as RoundedPolygonBorder).copy(
-      (p) => p.transformed(MaterialTransforms.rotateDegrees(-15 - _sre)),
-    ),
-    (MaterialShapes.oval as RoundedPolygonBorder).copy(
-      (p) => p.transformed(MaterialTransforms.rotateDegrees(-70 - _sre)),
-    ),
+    MaterialShapes.softBurst
+        .transformed(MaterialShapesPointTransformers.rotateDegrees(-_sre))
+        .normalized(),
+    MaterialShapes.cookie9Sided
+        .transformed(MaterialShapesPointTransformers.rotateDegrees(-_sre))
+        .normalized(),
+    MaterialShapes.pentagon
+        .transformed(MaterialShapesPointTransformers.rotateDegrees(-18 - _sre))
+        .normalized(),
+    MaterialShapes.pill
+        .transformed(MaterialShapesPointTransformers.rotateDegrees(60 - _sre))
+        .normalized(),
+    MaterialShapes.sunny
+        .transformed(MaterialShapesPointTransformers.rotateDegrees(5 - _sre))
+        .normalized(),
+    MaterialShapes.cookie4Sided
+        .transformed(MaterialShapesPointTransformers.rotateDegrees(-15 - _sre))
+        .normalized(),
+    MaterialShapes.oval
+        .transformed(MaterialShapesPointTransformers.rotateDegrees(-70 - _sre))
+        .normalized(),
   ];
 
   @override
@@ -132,18 +131,22 @@ class _MaterialLoadingIndicatorState extends State<MaterialLoadingIndicator>
               : Curves.easeInOut,
         );
 
-        final shape = ShapeBorderTween(
-          begin:
-              (_loadingIndicatorShapes[_loadingIndicatorIndex %
-                      _loadingIndicatorShapes.length])
-                  .copy(
-                    (p) =>
-                        p.transformed(MaterialTransforms.rotateDegrees(_sre)),
-                  ),
-          end:
+        final shape =
+            Morph(
+              _loadingIndicatorShapes[_loadingIndicatorIndex %
+                      _loadingIndicatorShapes.length]
+                  .transformed(
+                    MaterialShapesPointTransformers.rotateDegrees(_sre),
+                  )
+                  .normalized(),
               _loadingIndicatorShapes[(_loadingIndicatorIndex + 1) %
                   _loadingIndicatorShapes.length],
-        ).chain(curved1).evaluate(_shapeController)!;
+            ).toShapeDecoration(
+              progress: curved1.evaluate(_shapeController),
+              color: widget.style == MaterialLoadingIndicatorStyle.contained
+                  ? colorScheme.onPrimaryContainer
+                  : colorScheme.primary,
+            );
         final rotate = Tween<double>(
           begin: 0,
           end: _sre / 180 * math.pi,
@@ -160,12 +163,7 @@ class _MaterialLoadingIndicatorState extends State<MaterialLoadingIndicator>
             child: Container(
               width: 34 * widgetScale,
               height: 34 * widgetScale,
-              decoration: ShapeDecoration(
-                color: widget.style == MaterialLoadingIndicatorStyle.contained
-                    ? colorScheme.onPrimaryContainer
-                    : colorScheme.primary,
-                shape: shape,
-              ),
+              decoration: shape,
             ),
           ),
         );
@@ -194,7 +192,7 @@ class _MaterialLoadingIndicatorState extends State<MaterialLoadingIndicator>
     );
   }
 
-  void _scheduleBounce() => Future.delayed(Durations.short3).then((_) {
+  void _scheduleBounce() => Future.delayed(Durations.short2).then((_) {
     if (!mounted || !_rotateController.isAnimating) return;
     _scaleController.repeat(reverse: true, count: 2);
   });

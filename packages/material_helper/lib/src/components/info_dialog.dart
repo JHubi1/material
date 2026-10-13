@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
+import 'scrolling_alert_dialog.dart';
 
 Future<void> showInfoDialog({
   required BuildContext context,
@@ -6,36 +8,26 @@ Future<void> showInfoDialog({
   Color? iconColor,
   required String title,
   required Widget content,
-  double? elevation,
-  Color? shadowColor,
-  Color? surfaceTintColor,
+  EdgeInsetsGeometry? contentPadding,
   String? semanticLabel,
-  ShapeBorder? shape,
   AlignmentGeometry? alignment,
 }) async {
   return await showDialog(
     context: context,
-    builder: (_) => AlertDialog(
+    builder: (_) => ScrollingAlertDialog(
       icon: icon,
       iconColor: iconColor,
       title: Text(title),
-      content: SizedBox(
-        width: MediaQuery.sizeOf(context).width,
-        child: content,
-      ),
+      content: content,
+      contentPadding: contentPadding,
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(MaterialLocalizations.of(context).okButtonLabel),
         ),
       ],
-      elevation: elevation,
-      shadowColor: shadowColor,
-      surfaceTintColor: surfaceTintColor,
       semanticLabel: semanticLabel,
-      shape: shape,
       alignment: alignment,
-      scrollable: true,
     ),
   );
 }

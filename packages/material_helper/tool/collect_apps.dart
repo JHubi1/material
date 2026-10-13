@@ -5,8 +5,8 @@ void main(_) {
   Directory.current = Directory(
     "${File(Platform.script.toFilePath()).parent.parent.parent.parent.path}/apps",
   );
-  Map<String, Map<String, String?>> apps = {};
-  Map<String, String> icons = {};
+  final apps = <String, Map<String, String?>>{};
+  final icons = <String, String>{};
   for (var app in Directory.current.listSync()) {
     final dir = Directory(app.path);
     final basename = dir.path.split(Platform.pathSeparator).last;

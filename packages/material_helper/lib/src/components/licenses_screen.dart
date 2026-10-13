@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../material_helper.dart';
-import '../l10n/app_localizations.dart';
 import '../l10n/app_localizations_en.dart';
 
 class LicensesScreen extends StatelessWidget {
@@ -26,7 +25,9 @@ class LicensesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(localizations.licensesScreenTitle)),
       body: MaterialFutureLoadedWidget(
-        enableAnimation: _cachedLicenseRegistry.isEmpty,
+        animationStyle: _cachedLicenseRegistry.isEmpty
+            ? MaterialLoadedWidgetAnimationStyle.all
+            : MaterialLoadedWidgetAnimationStyle.none,
         future: () async {
           if (_cachedLicenseRegistry.isNotEmpty) return _cachedLicenseRegistry;
           return await LicenseRegistry.licenses.toList();
@@ -95,6 +96,10 @@ class _LicensesDetailsScreen extends StatelessWidget {
     final localizations =
         MaterialHelperLocalizations.of(context) ??
         MaterialHelperLocalizationsEn();
+    final isFont = licenses.any(
+      (l) => l.any((e) => e.$2.contains("Open Font License")),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.licensesDetailsScreenTitle(packageName)),
@@ -102,7 +107,10 @@ class _LicensesDetailsScreen extends StatelessWidget {
       body: Builder(
         builder: (context) {
           final textStyle = DefaultTextStyle.of(context).style.copyWith(
-            fontFamily: "GoogleSansCode",
+            fontFamily: isFont
+                ? packageName.replaceAll(" ", "")
+                : "GoogleSansCode",
+            fontFamilyFallback: ["GoogleSansCode"],
             package: "material_graphics",
           );
           final spaceWidth = (TextPainter(
@@ -112,7 +120,10 @@ class _LicensesDetailsScreen extends StatelessWidget {
           final children = List.generate(licenses.length, (index) {
             final license = licenses.elementAt(index);
             var childrenChildren = List<Widget>.generate(license.length, (sub) {
-              final child = Text(license.elementAt(sub).$2, style: textStyle);
+              final child = Text(
+                license.elementAt(sub).$2.replaceAll("\r ", "\n"),
+                style: textStyle,
+              );
               if (license.elementAt(sub).$1 > 0) {
                 return Padding(
                   padding: EdgeInsets.only(

@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
 import 'package:material_helper/material_helper.dart';
+import 'package:material_ui/material_ui.dart';
+
 // import 'package:package_info_plus/package_info_plus.dart';
 
 Color randomColor([int? seed]) =>
@@ -53,7 +54,7 @@ class _IconComposerIconState extends State<_IconComposerIcon>
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      var tmpBoxSize = _boxKey.currentContext?.size?.width ?? 0;
+      final tmpBoxSize = _boxKey.currentContext?.size?.width ?? 0;
       if (tmpBoxSize != _boxSize) {
         _boxSize = tmpBoxSize;
         if (mounted) setState(() {});
@@ -130,7 +131,10 @@ class _IconComposerIconState extends State<_IconComposerIcon>
   }
 }
 
-void showIconComposer(BuildContext context, [String? initialAppName]) async {
+Future<void> showIconComposer(
+  BuildContext context, [
+  String? initialAppName,
+]) async {
   if (initialAppName == null || initialAppName.isEmpty) {
     final packageInfo = await PackageInfo.fromPlatform();
     initialAppName = packageInfo.appName;
@@ -138,20 +142,20 @@ void showIconComposer(BuildContext context, [String? initialAppName]) async {
 
   String? appName = initialAppName;
   final icons = [
-    Icons.celebration,
-    Icons.pets,
-    Icons.face,
-    Icons.cake,
-    Icons.local_florist,
-    Icons.sports_esports,
-    Icons.music_note,
-    Icons.lock,
-    Icons.directions_car,
-    Icons.home,
-    Icons.school,
-    Icons.camera_alt,
-    Icons.map,
-    Icons.phone,
+    Icons.celebration_rounded,
+    Icons.pets_rounded,
+    Icons.face_rounded,
+    Icons.cake_rounded,
+    Icons.local_florist_rounded,
+    Icons.sports_esports_rounded,
+    Icons.music_note_rounded,
+    Icons.lock_rounded,
+    Icons.directions_car_rounded,
+    Icons.home_rounded,
+    Icons.school_rounded,
+    Icons.camera_alt_rounded,
+    Icons.map_rounded,
+    Icons.phone_rounded,
   ];
   var selectedIcon = 0;
 

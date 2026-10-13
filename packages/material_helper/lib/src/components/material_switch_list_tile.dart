@@ -1,7 +1,7 @@
 /// @docImport 'material_list_tile.dart';
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'material_list_tile.dart';
 
 /// A [MaterialListTile] with a switch.
@@ -270,9 +270,18 @@ class MaterialSwitchListTile extends StatelessWidget {
     this.selectedTileColor,
     this.enableFeedback,
     this.hoverColor,
-  }) : assert(activeThumbImage != null || onActiveThumbImageError == null),
-       assert(inactiveThumbImage != null || onInactiveThumbImageError == null),
-       assert(!isThreeLine || subtitle != null);
+  }) : assert(
+         activeThumbImage != null || onActiveThumbImageError == null,
+         "onActiveThumbImageError requires activeThumbImage to be provided.",
+       ),
+       assert(
+         inactiveThumbImage != null || onInactiveThumbImageError == null,
+         "onInactiveThumbImageError requires inactiveThumbImage to be provided.",
+       ),
+       assert(
+         !isThreeLine || subtitle != null,
+         "A three-line list tile requires a subtitle.",
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -304,19 +313,20 @@ class MaterialSwitchListTile extends StatelessWidget {
       ),
     );
 
-    final ListTileThemeData listTileTheme = ListTileTheme.of(context);
-    final ListTileControlAffinity effectiveControlAffinity =
+    final listTileTheme = ListTileTheme.of(context);
+    final effectiveControlAffinity =
         controlAffinity ??
         listTileTheme.controlAffinity ??
         ListTileControlAffinity.platform;
-    Widget? leading, trailing;
+    Widget? leading;
+    Widget? trailing;
     (leading, trailing) = switch (effectiveControlAffinity) {
       ListTileControlAffinity.leading => (control, secondary),
       ListTileControlAffinity.trailing ||
       ListTileControlAffinity.platform => (secondary, control),
     };
 
-    final Color effectiveActiveColor =
+    final effectiveActiveColor =
         activeColor ??
         SwitchTheme.of(context).thumbColor?.resolve(<WidgetState>{
           if (selected) WidgetState.selected,

@@ -1,6 +1,4 @@
-include: package:flutter_lints/flutter.yaml
-
-linter:
-  rules:
-    - directives_ordering
-    - prefer_relative_imports
+analyzer:
+  exclude:
+    - build/**
+include: package:material_helper/analysis.yaml

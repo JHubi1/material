@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/app_localizations_en.dart';
@@ -19,7 +19,31 @@ import 'material_list_tile_headline.dart';
 /// {@endtemplate}
 enum MaterialListTileBorder { open, closed }
 
+/// An enumeration of the styles of titles for [MaterialListTile].
+///
+/// The [MaterialListTileTitleStyle.normal] style will have a slightly bolder
+/// font weight. This is preferred for titles.
+///
+/// If this list tile is being used as a standalone text item, or like a body
+/// text, then the [MaterialListTileTitleStyle.text] style is preferred.
 enum MaterialListTileTitleStyle { normal, text }
+
+/// An enumeration of the styles of backgrounds for [MaterialListTile].
+///
+/// The [MaterialListTileBackgroundStyle.normal] style is the default background
+/// style for a list tile. This should be used in almost all cases.
+///
+/// If the contrast is too low between the background widget and the list tile
+/// background itself, using another background type can help increase visual
+/// hierarchy.
+///
+/// If that is the case, the [MaterialListTileBackgroundStyle.lightened] is
+/// preferred over the [MaterialListTileBackgroundStyle.darkened] style, as it
+/// is more in line with the Material Expressive style.
+///
+/// Different background styles should not be used next to each other, as it can
+/// create visual inconsistency.
+enum MaterialListTileBackgroundStyle { normal, darkened, lightened }
 
 /// An inherited widget that defines the border styles for [MaterialListTile]
 /// widgets.
@@ -47,7 +71,7 @@ class MaterialListTileBorderStyle extends InheritedWidget {
   }
 
   static MaterialListTileBorderStyle of(BuildContext context) {
-    final MaterialListTileBorderStyle? result = maybeOf(context);
+    final result = maybeOf(context);
     assert(result != null, "No MaterialListTileBorderStyle found in context");
     return result!;
   }
@@ -88,6 +112,8 @@ class MaterialListTile extends StatelessWidget {
   ///
   /// If [MaterialListTileTitleStyle.normal] is used, the title will have a
   /// slightly bolder font weight. This is preferred.
+  ///
+  /// See [MaterialListTileTitleStyle] for more information.
   final MaterialListTileTitleStyle titleStyle;
 
   /// Additional content displayed below the title.
@@ -281,6 +307,11 @@ class MaterialListTile extends StatelessWidget {
   /// The color of splash for the tile's [Material].
   final Color? splashColor;
 
+  /// The style of the list tile background.
+  ///
+  /// See [MaterialListTileBackgroundStyle] for more information.
+  final MaterialListTileBackgroundStyle backgroundStyle;
+
   /// {@macro flutter.widgets.Focus.focusNode}
   final FocusNode? focusNode;
 
@@ -343,6 +374,7 @@ class MaterialListTile extends StatelessWidget {
     this.focusColor,
     this.hoverColor,
     this.splashColor,
+    this.backgroundStyle = MaterialListTileBackgroundStyle.normal,
     this.focusNode,
     this.autofocus = false,
     this.tileColor,
@@ -385,26 +417,48 @@ class MaterialListTile extends StatelessWidget {
       ),
     );
 
+    final tileColor =
+        this.tileColor ??
+        (colorScheme.brightness == Brightness.light
+            ? switch (backgroundStyle) {
+                MaterialListTileBackgroundStyle.normal =>
+                  colorScheme.surfaceBright,
+                MaterialListTileBackgroundStyle.darkened =>
+                  colorScheme.surfaceContainerLow,
+                MaterialListTileBackgroundStyle.lightened =>
+                  colorScheme.surfaceContainerLowest,
+              }
+            : switch (backgroundStyle) {
+                MaterialListTileBackgroundStyle.normal =>
+                  colorScheme.surfaceContainerHighest,
+                MaterialListTileBackgroundStyle.darkened =>
+                  colorScheme.surfaceContainer,
+                MaterialListTileBackgroundStyle.lightened =>
+                  colorScheme.surfaceBright,
+              });
+
     return Material(
+      color: Colors.transparent,
       child: Padding(
         padding: const EdgeInsets.only(top: 1, bottom: 1, left: 16, right: 16),
         child: ListTile(
           leading: leading,
-          title: title,
-          subtitle: subtitle,
+          title: title != null
+              ? Transform.translate(offset: Offset(0, 1), child: title)
+              : null,
+          subtitle: subtitle != null
+              ? Transform.translate(offset: Offset(0, -1), child: subtitle)
+              : null,
           trailing: trailing,
           isThreeLine: isThreeLine,
           selectedColor: selectedColor ?? colorScheme.onPrimaryContainer,
           iconColor: iconColor,
           textColor: textColor,
           titleTextStyle:
-              titleTextStyle ??
-              theme.textTheme.bodyLarge?.copyWith(
-                color: colorScheme.onSurface,
-                fontWeight: titleStyle == MaterialListTileTitleStyle.normal
-                    ? FontWeight.w500
-                    : null,
-              ),
+              (titleStyle == MaterialListTileTitleStyle.normal
+                      ? theme.textTheme.titleMedium
+                      : theme.textTheme.bodyLarge)!
+                  .copyWith(color: colorScheme.onSurface),
           subtitleTextStyle: subtitleTextStyle,
           leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
           enabled: enabled,
@@ -418,22 +472,20 @@ class MaterialListTile extends StatelessWidget {
           splashColor: splashColor,
           focusNode: focusNode,
           autofocus: autofocus,
-          tileColor:
-              tileColor ??
-              (theme.brightness == Brightness.light
-                  ? colorScheme.surfaceContainerLow
-                  : colorScheme.surfaceContainerHighest),
+          tileColor: tileColor,
           selectedTileColor: selectedTileColor ?? colorScheme.primaryContainer,
           enableFeedback: enableFeedback,
 
           shape: shape,
           contentPadding: EdgeInsets.only(
-            top: 2,
-            bottom: 2,
-            left: 16,
+            top: 6,
+            bottom: 6,
+            left: 20,
             right: 16,
           ),
-          horizontalTitleGap: 14, // makes spacing on par with reference
+          horizontalTitleGap:
+              16, // should be 24 to be in line with official Google products, but it looks way better right now
+          minTileHeight: 60,
         ),
       ),
     );
@@ -443,13 +495,13 @@ class MaterialListTile extends StatelessWidget {
     List<Widget> tiles, {
     MaterialListTileHeadline? headline,
   }) {
-    bool spacedAway = false;
+    var spacedAway = false;
     if (headline?.child case Text(data: final String text)) {
       spacedAway = text.isEmpty;
     }
 
     return [
-      if (headline != null) spacedAway ? SizedBox(height: 14) : headline,
+      if (headline != null) spacedAway ? SizedBox(height: 26) : headline,
       ...List.generate(
         tiles.length,
         (index) => MaterialListTileBorderStyle(
@@ -471,7 +523,7 @@ class MaterialListTileBottomSpacer extends StatelessWidget {
       SafeArea(top: false, left: false, right: false, child: SizedBox.shrink());
 }
 
-void copyData(BuildContext context, String? data) async {
+Future<void> copyData(BuildContext context, String? data) async {
   if (data == null) return;
   await Clipboard.setData(ClipboardData(text: data));
   if (context.mounted) {

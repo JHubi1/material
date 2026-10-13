@@ -1,488 +1,405 @@
-/// A Flutter port of AndroidX MaterialShapes and everything around them.
-///
-/// Licensed under Apache-2.0:
-/// https://android.googlesource.com/platform/frameworks/support/%2B/androidx-master-dev/LICENSE.txt
-///
-/// References:
-/// - https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/MaterialShapes.kt
-/// - https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:graphics/graphics-shapes/src/commonMain/kotlin/androidx/graphics/shapes/RoundedPolygon.kt
-/// - https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:graphics/graphics-shapes/src/commonMain/kotlin/androidx/graphics/shapes/Shapes.kt
-library;
+import 'dart:math' as math;
 
-// TODO: Add an image to all MaterialShapes documentation.
-// Crop from: https://m3.material.io/styles/shape/overview-principles#579dd4ba-39f3-4e60-bd9b-1d97ed6ef1bf
+import 'package:material_new_shapes/material_new_shapes.dart';
+import 'package:material_ui/material_ui.dart';
 
-import 'package:flutter/material.dart';
-import 'package:vector_math/vector_math.dart' show Vector2;
-import 'rounded_polygon.dart';
+export 'package:material_new_shapes/material_new_shapes.dart';
 
-const CornerRounding _cornerRound15 = CornerRounding(0.15);
-const CornerRounding _cornerRound20 = CornerRounding(0.2);
-const CornerRounding _cornerRound30 = CornerRounding(0.3);
-const CornerRounding _cornerRound50 = CornerRounding(0.5);
-const CornerRounding _cornerRound100 = CornerRounding(1.0);
+/// Different collections of MaterialShapes for various use cases.
+extension MaterialShapesCollections on MaterialShapes {
+  static Map<String, List<RoundedPolygon>> values = Map.unmodifiable({
+    "containers": MaterialShapesCollections.containers,
+    "containersAll": MaterialShapesCollections.containersAll,
+    "decorative": MaterialShapesCollections.decorative,
+  });
 
-final PointTransformer _rotateNeg45 = MaterialTransforms.rotateDegrees(-45);
-final PointTransformer _rotateNeg90 = MaterialTransforms.rotateDegrees(-90);
-final PointTransformer _rotateNeg135 = MaterialTransforms.rotateDegrees(-135);
-
-abstract class MaterialShapes {
-  /// The Material Shape called "Circle".
-  static ShapeBorder circle = RoundedPolygonBorder(
-    polygon: RoundedPolygon.circle(numVertices: 10),
-  );
-
-  /// The Material Shape called "Square".
-  static ShapeBorder square = RoundedPolygonBorder(
-    polygon: RoundedPolygon.rectangle(
-      width: 1,
-      height: 1,
-      rounding: _cornerRound30,
-    ),
-  );
-
-  /// The Material Shape called "Slanted".
-  static ShapeBorder slanted = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon([
-      PointNRound(Offset(0.926, 0.970), CornerRounding(0.189, 0.811)),
-      PointNRound(Offset(-0.021, 0.967), CornerRounding(0.187, 0.057)),
-    ], 2),
-  );
-
-  /// The Material Shape called "Arch".
-  static ShapeBorder arch = RoundedPolygonBorder(
-    polygon: RoundedPolygon.fromNumVertices(
-      numVertices: 4,
-      perVertexRounding: [
-        _cornerRound100,
-        _cornerRound100,
-        _cornerRound20,
-        _cornerRound20,
-      ],
-    ).transformed(_rotateNeg135),
-  );
-
-  /// The Material Shape called "Fan".
-  static ShapeBorder fan = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon([
-      PointNRound(Offset(1.004, 1.000), CornerRounding(0.148, 0.417)),
-      PointNRound(Offset(0.000, 1.000), CornerRounding(0.151)),
-      PointNRound(Offset(0.000, -0.003), CornerRounding(0.148)),
-      PointNRound(Offset(0.978, 0.020), CornerRounding(0.803)),
-    ], 1),
-  );
-
-  /// The Material Shape called "Arrow".
-  static ShapeBorder arrow = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon([
-      PointNRound(Offset(0.500, 0.892), CornerRounding(0.313)),
-      PointNRound(Offset(-0.216, 1.050), CornerRounding(0.207)),
-      PointNRound(Offset(0.499, -0.160), CornerRounding(0.215, 1.000)),
-      PointNRound(Offset(1.225, 1.060), CornerRounding(0.211)),
-    ], 1),
-  );
-
-  /// The Material Shape called "Semi Circle".
-  static ShapeBorder semiCircle = RoundedPolygonBorder(
-    polygon: RoundedPolygon.rectangle(
-      width: 1.6,
-      height: 1,
-      perVertexRounding: [
-        _cornerRound20,
-        _cornerRound20,
-        _cornerRound100,
-        _cornerRound100,
-      ],
-    ),
-  );
-
-  /// The Material Shape called "Oval".
-  static ShapeBorder oval = RoundedPolygonBorder(
-    polygon: RoundedPolygon.circle()
-        .transformed(MaterialTransforms.scale(1, 0.64))
-        .transformed(_rotateNeg45),
-  );
-
-  /// The Material Shape called "Pill".
-  static ShapeBorder pill = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.961, 0.039), CornerRounding(0.426)),
-        PointNRound(Offset(1.001, 0.428)),
-        PointNRound(Offset(1.000, 0.609), CornerRounding(1.000)),
-      ],
-      2,
-      mirroring: true,
-    ),
-  );
-
-  /// The Material Shape called "Triangle".
-  static ShapeBorder triangle = RoundedPolygonBorder(
-    polygon: RoundedPolygon.fromNumVertices(
-      numVertices: 3,
-      rounding: _cornerRound20,
-    ).transformed(_rotateNeg90),
-  );
-
-  /// The Material Shape called "Diamond".
-  static ShapeBorder diamond = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon([
-      PointNRound(Offset(0.500, 1.096), CornerRounding(0.151, 0.524)),
-      PointNRound(Offset(0.040, 0.500), CornerRounding(0.159)),
-    ], 2),
-  );
-
-  /// The Material Shape called "Clam Shell".
-  static ShapeBorder clamShell = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon([
-      PointNRound(Offset(0.171, 0.841), CornerRounding(0.159)),
-      PointNRound(Offset(-0.020, 0.500), CornerRounding(0.140)),
-      PointNRound(Offset(0.17, 0.159), CornerRounding(0.159)),
-    ], 2),
-  );
-
-  /// The Material Shape called "Pentagon".
-  static ShapeBorder pentagon = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.500, -0.009), CornerRounding(0.172)),
-        PointNRound(Offset(1.030, 0.365), CornerRounding(0.164)),
-        PointNRound(Offset(0.828, 0.970), CornerRounding(0.169)),
-      ],
-      1,
-      mirroring: true,
-    ),
-  );
-
-  /// The Material Shape called "Gem".
-  static ShapeBorder gem = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.499, 1.023), CornerRounding(0.241, 0.778)),
-        PointNRound(Offset(-0.005, 0.792), CornerRounding(0.208)),
-        PointNRound(Offset(0.073, 0.258), CornerRounding(0.228)),
-        PointNRound(Offset(0.433, -0.000), CornerRounding(0.491)),
-      ],
-      1,
-      mirroring: true,
-    ),
-  );
-
-  /// The Material Shape called "Sunny".
-  static ShapeBorder sunny = RoundedPolygonBorder(
-    polygon: RoundedPolygon.star(
-      numVerticesPerRadius: 8,
-      innerRadius: 0.800,
-      rounding: _cornerRound15,
-    ),
-  );
-
-  /// The Material Shape called "Very Sunny".
-  static ShapeBorder verySunny = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon([
-      PointNRound(Offset(0.500, 1.08), CornerRounding(0.085)),
-      PointNRound(Offset(0.358, 0.843), CornerRounding(0.085)),
-    ], 8),
-  );
-
-  /// The Material Shape called "4-Sided Cookie".
-  static ShapeBorder cookie4Sided = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon([
-      PointNRound(Offset(1.237, 1.236), CornerRounding(0.258)),
-      PointNRound(Offset(0.500, 0.918), CornerRounding(0.233)),
-    ], 4),
-  );
-
-  /// The Material Shape called "6-Sided Cookie".
-  static ShapeBorder cookie6Sided = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon([
-      PointNRound(Offset(0.723, 0.884), CornerRounding(0.394)),
-      PointNRound(Offset(0.500, 1.099), CornerRounding(0.398)),
-    ], 6),
-  );
-
-  /// The Material Shape called "7-Sided Cookie".
-  static ShapeBorder cookie7Sided = RoundedPolygonBorder(
-    polygon: RoundedPolygon.star(
-      numVerticesPerRadius: 7,
-      innerRadius: 0.750,
-      rounding: _cornerRound50,
-    ).transformed(_rotateNeg90),
-  );
-
-  /// The Material Shape called "9-Sided Cookie".
-  static ShapeBorder cookie9Sided = RoundedPolygonBorder(
-    polygon: RoundedPolygon.star(
-      numVerticesPerRadius: 9,
-      innerRadius: 0.800,
-      rounding: _cornerRound50,
-    ).transformed(_rotateNeg90),
-  );
-
-  /// The Material Shape called "12-Sided Cookie".
-  static ShapeBorder cookie12Sided = RoundedPolygonBorder(
-    polygon: RoundedPolygon.star(
-      numVerticesPerRadius: 12,
-      innerRadius: 0.800,
-      rounding: _cornerRound50,
-    ).transformed(_rotateNeg90),
-  );
-
-  /// The Material Shape called "Ghostish".
-  static ShapeBorder ghostish = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.500, 0.000), CornerRounding(1.000)),
-        PointNRound(Offset(1.000, 0.000), CornerRounding(1.000)),
-        PointNRound(Offset(1.000, 1.140), CornerRounding(0.254, 0.106)),
-        PointNRound(Offset(0.575, 0.906), CornerRounding(0.253)),
-      ],
-      1,
-      mirroring: true,
-    ),
-  );
-
-  /// The Material Shape called "4-Leaf Clover".
-  static ShapeBorder clover4Leaf = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.500, 0.074)),
-        PointNRound(Offset(0.725, -0.099), CornerRounding(0.476)),
-      ],
-      4,
-      mirroring: true,
-    ),
-  );
-
-  /// The Material Shape called "8-Leaf Clover".
-  static ShapeBorder clover8Leaf = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon([
-      PointNRound(Offset(0.500, 0.036)),
-      PointNRound(Offset(0.758, -0.101), CornerRounding(0.209)),
-    ], 8),
-  );
-
-  /// The Material Shape called "Burst".
+  /// A collection of interesting shapes suitable for container-like usage.
   ///
-  /// **WARNING:** This shape does not work well with
-  /// [RoundedPolygonBorder.lerpTo] or [RoundedPolygonBorder.lerpFrom]! Do not
-  /// use if that is the intended purpose!
-  static ShapeBorder burst = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon([
-      PointNRound(Offset(0.500, -0.006), CornerRounding(0.006)),
-      PointNRound(Offset(0.592, 0.158), CornerRounding(0.006)),
-    ], 12),
-  );
-
-  /// The Material Shape called "Soft Burst".
-  ///
-  /// **WARNING:** This shape does not work well with
-  /// [RoundedPolygonBorder.lerpTo] or [RoundedPolygonBorder.lerpFrom]! Do not
-  /// use if that is the intended purpose!
-  static ShapeBorder softBurst = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon([
-      PointNRound(Offset(0.193, 0.277), CornerRounding(0.053)),
-      PointNRound(Offset(0.176, 0.055), CornerRounding(0.053)),
-    ], 10),
-  );
-
-  /// The Material Shape called "Boom".
-  static ShapeBorder boom = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon([
-      PointNRound(Offset(0.457, 0.296), CornerRounding(0.007)),
-      PointNRound(Offset(0.500, -0.051), CornerRounding(0.007)),
-    ], 15),
-  );
-
-  /// The Material Shape called "Soft Boom".
-  static ShapeBorder softBoom = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.733, 0.454)),
-        PointNRound(Offset(0.839, 0.437), CornerRounding(0.532)),
-        PointNRound(Offset(0.949, 0.449), CornerRounding(0.439, 1.000)),
-        PointNRound(Offset(0.998, 0.478), CornerRounding(0.174)),
-      ],
-      16,
-      mirroring: true,
-    ),
-  );
-
-  /// The Material Shape called "Flower".
-  static ShapeBorder flower = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.370, 0.187)),
-        PointNRound(Offset(0.416, 0.049), CornerRounding(0.381)),
-        PointNRound(Offset(0.479, 0.001), CornerRounding(0.095)),
-      ],
-      8,
-      mirroring: true,
-    ),
-  );
-
-  /// The Material Shape called "Puffy".
-  static ShapeBorder puffy = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.500, 0.053)),
-        PointNRound(Offset(0.545, -0.040), CornerRounding(0.405)),
-        PointNRound(Offset(0.670, -0.035), CornerRounding(0.426)),
-        PointNRound(Offset(0.717, 0.066), CornerRounding(0.574)),
-        PointNRound(Offset(0.722, 0.128)),
-        PointNRound(Offset(0.777, 0.002), CornerRounding(0.360)),
-        PointNRound(Offset(0.914, 0.149), CornerRounding(0.660)),
-        PointNRound(Offset(0.926, 0.289), CornerRounding(0.660)),
-        PointNRound(Offset(0.881, 0.346)),
-        PointNRound(Offset(0.940, 0.344), CornerRounding(0.126)),
-        PointNRound(Offset(1.003, 0.437), CornerRounding(0.255)),
-      ],
-      2,
-      mirroring: true,
-    ).transformed((p) => Vector2(p.x, p.y * 0.742)),
-  );
-
-  /// The Material Shape called "Puffy Diamond".
-  static ShapeBorder puffyDiamond = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.870, 0.130), CornerRounding(0.146)),
-        PointNRound(Offset(0.818, 0.357)),
-        PointNRound(Offset(1.000, 0.332), CornerRounding(0.853)),
-      ],
-      4,
-      mirroring: true,
-    ),
-  );
-
-  /// The Material Shape called "Pixel Circle".
-  static ShapeBorder pixelCircle = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.500, 0.000)),
-        PointNRound(Offset(0.704, 0.000)),
-        PointNRound(Offset(0.704, 0.065)),
-        PointNRound(Offset(0.843, 0.065)),
-        PointNRound(Offset(0.843, 0.148)),
-        PointNRound(Offset(0.926, 0.148)),
-        PointNRound(Offset(0.926, 0.296)),
-        PointNRound(Offset(1.000, 0.296)),
-      ],
-      2,
-      mirroring: true,
-    ),
-  );
-
-  /// The Material Shape called "Pixel Triangle".
-  static ShapeBorder pixelTriangle = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.110, 0.500)),
-        PointNRound(Offset(0.113, 0.000)),
-        PointNRound(Offset(0.287, 0.000)),
-        PointNRound(Offset(0.287, 0.087)),
-        PointNRound(Offset(0.421, 0.087)),
-        PointNRound(Offset(0.421, 0.170)),
-        PointNRound(Offset(0.560, 0.170)),
-        PointNRound(Offset(0.560, 0.265)),
-        PointNRound(Offset(0.674, 0.265)),
-        PointNRound(Offset(0.675, 0.344)),
-        PointNRound(Offset(0.789, 0.344)),
-        PointNRound(Offset(0.789, 0.439)),
-        PointNRound(Offset(0.888, 0.439)),
-      ],
-      1,
-      mirroring: true,
-    ),
-  );
-
-  /// The Material Shape called "Bun".
-  static ShapeBorder bun = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.796, 0.500)),
-        PointNRound(Offset(0.853, 0.518), CornerRounding(1.000)),
-        PointNRound(Offset(0.992, 0.631), CornerRounding(1.000)),
-        PointNRound(Offset(0.968, 1.000), CornerRounding(1.000)),
-      ],
-      2,
-      mirroring: true,
-    ),
-  );
-
-  /// The Material Shape called "Heart".
-  static ShapeBorder heart = RoundedPolygonBorder(
-    polygon: RoundedPolygonBuilder.customPolygon(
-      [
-        PointNRound(Offset(0.500, 0.268), CornerRounding(0.016)),
-        PointNRound(Offset(0.792, -0.066), CornerRounding(0.958)),
-        PointNRound(Offset(1.064, 0.276), CornerRounding(1.000)),
-        PointNRound(Offset(0.501, 0.946), CornerRounding(0.129)),
-      ],
-      1,
-      mirroring: true,
-    ),
-  );
-
-  /// A list of all Material Shapes defined in this class.
-  static List<ShapeBorder> values = List.unmodifiable([
-    circle,
-    square,
-    slanted,
-    arch,
-    fan,
-    arrow,
-    semiCircle,
-    oval,
-    pill,
-    triangle,
-    diamond,
-    clamShell,
-    pentagon,
-    gem,
-    sunny,
-    verySunny,
-    cookie4Sided,
-    cookie6Sided,
-    cookie7Sided,
-    cookie9Sided,
-    cookie12Sided,
-    ghostish,
-    clover4Leaf,
-    clover8Leaf,
-    burst,
-    softBurst,
-    boom,
-    softBoom,
-    flower,
-    puffy,
-    puffyDiamond,
-    pixelCircle,
-    pixelTriangle,
-    bun,
-    heart,
+  /// For a more general collection of container shapes, not preselected to be
+  /// "interesting", use [MaterialShapesCollections.containersAll].
+  static List<RoundedPolygon> containers = List.unmodifiable([
+    MaterialShapes.slanted,
+    MaterialShapes.pill,
+    MaterialShapes.arrow,
+    MaterialShapes.pentagon,
+    MaterialShapes.gem,
+    MaterialShapes.verySunny,
+    MaterialShapes.cookie4Sided,
+    MaterialShapes.cookie9Sided,
+    MaterialShapes.softBurst,
+    MaterialShapes.softBoom,
+    MaterialShapes.flower,
+    MaterialShapes.ghostish,
   ]);
 
-  /// A list of Material Shapes suitable for containers.
-  ///
-  /// This may not include all shapes needed to get the job done, but this can
-  /// be useful for simple access to common container shapes.
-  static List<ShapeBorder> containers = List.unmodifiable([
-    slanted,
-    pill,
-    pentagon,
-    gem,
-    sunny,
-    verySunny,
-    cookie4Sided,
-    cookie6Sided,
-    cookie7Sided,
-    cookie9Sided,
-    cookie12Sided,
-    ghostish,
-    clover4Leaf,
-    clover8Leaf,
-    softBurst,
-    flower,
+  /// A collection of shapes suitable for container-like usage.
+  static List<RoundedPolygon> containersAll = List.unmodifiable([
+    MaterialShapes.circle,
+    MaterialShapes.square,
+    MaterialShapes.slanted,
+    MaterialShapes.arch,
+    MaterialShapes.pill,
+    MaterialShapes.arrow,
+    MaterialShapes.pentagon,
+    MaterialShapes.gem,
+    MaterialShapes.sunny,
+    MaterialShapes.verySunny,
+    MaterialShapes.cookie4Sided,
+    MaterialShapes.cookie6Sided,
+    MaterialShapes.cookie7Sided,
+    MaterialShapes.cookie9Sided,
+    MaterialShapes.cookie12Sided,
+    MaterialShapes.clover4Leaf,
+    MaterialShapes.clover8Leaf,
+    MaterialShapes.softBurst,
+    MaterialShapes.softBoom,
+    MaterialShapes.flower,
+    MaterialShapes.puffyDiamond,
+    MaterialShapes.ghostish,
+    MaterialShapes.pixelCircle,
+    MaterialShapes.bun,
   ]);
+
+  static List<RoundedPolygon> decorative = List.unmodifiable([
+    MaterialShapes.semiCircle,
+    MaterialShapes.oval,
+    MaterialShapes.triangle,
+    MaterialShapes.fan,
+    MaterialShapes.diamond,
+    MaterialShapes.clamShell,
+    MaterialShapes.burst,
+    MaterialShapes.boom,
+    MaterialShapes.puffy,
+    MaterialShapes.pixelTriangle,
+    MaterialShapes.heart,
+  ]);
+}
+
+extension on Path {
+  Path resize(Size size, [double scaleFactor = 1]) {
+    final scaleMatrix = Matrix4.diagonal3Values(
+      size.width * scaleFactor,
+      size.height * scaleFactor,
+      1,
+    );
+    final scaledPath = transform(scaleMatrix.storage);
+
+    final bounds = scaledPath.getBounds();
+    final translation = Offset(size.width / 2, size.height / 2) - bounds.center;
+    final finalPath = scaledPath.shift(translation);
+
+    return finalPath;
+  }
+}
+
+Rect _listToRect(List<double> list) {
+  assert(list.length == 4, "List must have exactly 4 elements.");
+  return Rect.fromLTRB(list[0], list[1], list[2], list[3]);
+}
+
+/// Different point transformation functions for MaterialShapes.
+class MaterialShapesPointTransformers {
+  MaterialShapesPointTransformers._();
+
+  static (double, double) Function(double x, double y) rotateDegrees(
+    double degrees,
+  ) {
+    final rad = degrees * math.pi / 180.0;
+    final cosA = math.cos(rad);
+    final sinA = math.sin(rad);
+    return (double x, double y) =>
+        ((x * cosA - y * sinA).toDouble(), (x * sinA + y * cosA).toDouble());
+  }
+
+  static (double, double) Function(double x, double y) scale(
+    double sx,
+    double sy,
+  ) =>
+      (double x, double y) => ((x * sx).toDouble(), (y * sy).toDouble());
+
+  static (double, double) Function(double x, double y) offset(
+    double dx,
+    double dy,
+  ) =>
+      (double x, double y) => ((x + dx).toDouble(), (y + dy).toDouble());
+}
+
+// MARK: PathClippers
+
+extension RoundedPolygonPathClipper on RoundedPolygon {
+  /// Converts the RoundedPolygon to a [PathClipper].
+  ///
+  /// Note: If you just want to display an icon, consider using [toShapeBorder]
+  /// or [toShapeDecoration] instead. This is the preferred way to use and
+  /// display shapes in the Material Apps project.
+  PathClipper toPathClipper({
+    int startAngle = 0,
+    bool repeatPath = false,
+    bool closePath = true,
+    Path? path,
+  }) => PathClipper(
+    toPath(
+      startAngle: startAngle,
+      repeatPath: repeatPath,
+      closePath: closePath,
+    ),
+  );
+}
+
+extension MorphPathClipper on Morph {
+  /// Converts the Morph to a [PathClipper].
+  ///
+  /// Note: If you just want to display an icon, consider using [toShapeBorder]
+  /// or [toShapeDecoration] instead. This is the preferred way to use and
+  /// display shapes in the Material Apps project.
+  PathClipper toPathClipper({
+    required double progress,
+    int startAngle = 0,
+    bool repeatPath = false,
+    bool closePath = true,
+    double rotationPivotX = 0,
+    double rotationPivotY = 0,
+    Path? path,
+  }) => PathClipper(
+    toPath(
+      progress: progress,
+      startAngle: startAngle,
+      repeatPath: repeatPath,
+      closePath: closePath,
+      rotationPivotX: rotationPivotX,
+      rotationPivotY: rotationPivotY,
+    ),
+  );
+}
+
+/// A CustomClipper that clips a widget to a given Path.
+///
+/// The path is automatically resized to fit the size of the widget being
+/// clipped. Is is rebuilt whenever the path changes.
+class PathClipper extends CustomClipper<Path> {
+  final Path path;
+  PathClipper(this.path);
+
+  @override
+  Path getClip(Size size) => path.resize(size);
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) =>
+      oldClipper != this;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is PathClipper && other.path == path;
+  }
+
+  @override
+  int get hashCode => path.hashCode;
+}
+
+// MARK: PathShape
+
+extension RoundedPolygonShapeBorder on RoundedPolygon {
+  /// Converts the RoundedPolygon to a [ShapeBorder].
+  ///
+  /// The returned value is mostly used to be passed to a [ShapeDecoration] in
+  /// the [toShapeDecoration] method.
+  ShapeBorder toShapeBorder() => RoundedPolygonBorder(polygon: this);
+
+  /// Converts the RoundedPolygon to a [ShapeDecoration].
+  ///
+  /// The returned value can be directly used in a [Container] or other widgets
+  /// that accept a [Decoration].
+  ///
+  /// The path is first converted to a [ShapeBorder] using the [toShapeBorder]
+  /// method, and then wrapped in a [ShapeDecoration].
+  ///
+  /// The [color] parameter defines the fill color of the shape.
+  ///
+  /// This is the preferred way to use and display shapes in the Material Apps
+  /// project.
+  ShapeDecoration toShapeDecoration({Color color = Colors.white}) =>
+      ShapeDecoration(color: color, shape: toShapeBorder());
+}
+
+extension MorphShapeBorder on Morph {
+  /// Converts the Morph to a [ShapeBorder].
+  ///
+  /// The returned value is mostly used to be passed to a [ShapeDecoration] in
+  /// the [toShapeDecoration] method.
+  ShapeBorder toShapeBorder({required double progress}) {
+    final path = toPath(progress: progress);
+
+    // calculating max bounds manually is necessary because [Morph.getBounds]
+    // does not calculate them correctly
+
+    final bounds = path.getBounds();
+    final centerX = bounds.center.dx;
+    final centerY = bounds.center.dy;
+
+    var maxDistSquared = 0.0;
+    final metrics = path.computeMetrics();
+
+    for (final metric in metrics) {
+      final length = metric.length;
+      const sampleCount = 32;
+      for (var i = 0; i <= sampleCount; i++) {
+        final tangent = metric.getTangentForOffset(length * i / sampleCount);
+        if (tangent != null) {
+          final dx = tangent.position.dx - centerX;
+          final dy = tangent.position.dy - centerY;
+          maxDistSquared = math.max(maxDistSquared, dx * dx + dy * dy);
+        }
+      }
+    }
+
+    final distance = math.sqrt(maxDistSquared);
+    return RoundedPolygonBorder(
+      path: path,
+      bounds: _listToRect([
+        centerX - distance,
+        centerY - distance,
+        centerX + distance,
+        centerY + distance,
+      ]),
+    );
+  }
+
+  /// Converts the Morph to a [ShapeDecoration].
+  ///
+  /// The returned value can be directly used in a [Container] or other widgets
+  /// that accept a [Decoration].
+  ///
+  /// The path is first converted to a [ShapeBorder] using the [toShapeBorder]
+  /// method, and then wrapped in a [ShapeDecoration].
+  ///
+  /// The [progress] parameter controls the interpolation between the two shapes
+  /// defined in the Morph. It may be evaluated from an animation controller to
+  /// create animated transitions between shapes.
+  ///
+  /// The [color] parameter defines the fill color of the shape.
+  ///
+  /// This is the preferred way to use and display shapes in the Material Apps
+  /// project.
+  ShapeDecoration toShapeDecoration({
+    required double progress,
+    Color color = Colors.white,
+  }) {
+    return ShapeDecoration(
+      color: color,
+      shape: toShapeBorder(progress: progress),
+    );
+  }
+}
+
+/// A ShapeBorder that uses a given Path for its shape.
+class RoundedPolygonBorder extends ShapeBorder {
+  final RoundedPolygon? polygon;
+  final Path? path;
+  final Rect? bounds;
+
+  const RoundedPolygonBorder({this.polygon, this.path, this.bounds})
+    : assert(
+        polygon != null || (path != null && bounds != null),
+        "Either polygon or both path and bounds must be provided.",
+      );
+
+  @override
+  EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
+
+  @override
+  ShapeBorder scale(double t) {
+    assert(
+      polygon != null,
+      "Scaling is only supported when a polygon is provided.",
+    );
+    return RoundedPolygonBorder(
+      polygon: polygon!.transformed(
+        MaterialShapesPointTransformers.scale(t, t),
+      ),
+    );
+  }
+
+  @override
+  Path getOuterPath(Rect rect, {TextDirection? textDirection}) =>
+      _buildPathFitted(rect);
+
+  @override
+  Path getInnerPath(Rect rect, {TextDirection? textDirection}) =>
+      _buildPathFitted(rect);
+
+  @override
+  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {}
+
+  @override
+  ShapeBorder lerpFrom(ShapeBorder? a, double t) {
+    if (a is RoundedPolygonBorder) {
+      assert(
+        polygon != null && a.polygon != null,
+        "Lerping is only supported when both borders have polygons provided.",
+      );
+
+      if (t <= 0.0) return a;
+      if (t >= 1.0) return this;
+
+      final p = Morph(a.polygon!, polygon!);
+      return RoundedPolygonBorder(
+        path: p.toPath(progress: t),
+        bounds: _listToRect(p.calculateMaxBounds()),
+      );
+    }
+    return this;
+  }
+
+  @override
+  ShapeBorder lerpTo(ShapeBorder? b, double t) {
+    if (b is RoundedPolygonBorder) {
+      assert(
+        polygon != null && b.polygon != null,
+        "Lerping is only supported when both borders have polygons provided.",
+      );
+
+      if (t <= 0.0) return this;
+      if (t >= 1.0) return b;
+
+      final p = Morph(polygon!, b.polygon!);
+      return RoundedPolygonBorder(
+        path: p.toPath(progress: t),
+        bounds: _listToRect(p.calculateMaxBounds()),
+      );
+    }
+    return this;
+  }
+
+  Path _buildPathFitted(Rect rect) {
+    final effectivePath = path ?? polygon!.toPath();
+    final effectiveBounds =
+        bounds ?? _listToRect(polygon!.calculateMaxBounds());
+
+    final polyWidth = effectiveBounds.width == 0 ? 1.0 : effectiveBounds.width;
+    final polyHeight = effectiveBounds.height == 0
+        ? 1.0
+        : effectiveBounds.height;
+    final scale = math.min(rect.width / polyWidth, rect.height / polyHeight);
+
+    final srcCenter = Offset(
+      effectiveBounds.left + effectiveBounds.width / 2,
+      effectiveBounds.top + effectiveBounds.height / 2,
+    );
+    final dx = rect.center.dx - srcCenter.dx * scale;
+    final dy = rect.center.dy - srcCenter.dy * scale;
+
+    final m4 = Matrix4.identity()
+      ..translateByDouble(dx, dy, 0, 1)
+      ..scaleByDouble(scale, scale, scale, 1);
+    return effectivePath.transform(m4.storage);
+  }
+
+  RoundedPolygonBorder copy(RoundedPolygon Function(RoundedPolygon p) modify) {
+    assert(
+      polygon != null,
+      "Copying is only supported when a polygon is provided.",
+    );
+    return RoundedPolygonBorder(polygon: modify(polygon!));
+  }
 }

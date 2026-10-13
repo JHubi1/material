@@ -5,7 +5,10 @@ export 'package:sqlite3/sqlite3.dart' show PreparedStatement, ResultSet;
 
 extension on String {
   String overflow(int maxLength) {
-    assert(maxLength > 3);
+    assert(
+      maxLength > 3,
+      "maxLength must be greater than 3, to accommodate the ellipsis.",
+    );
     maxLength -= 3;
     return length > maxLength ? "${substring(0, maxLength)}..." : this;
   }
@@ -14,36 +17,46 @@ extension on String {
 class DatabaseValue {
   final bool isInitialized;
 
-  DatabaseValue({this.isInitialized = false});
-
-  DatabaseValue copyWith({bool? isInitialized}) =>
-      DatabaseValue(isInitialized: isInitialized ?? this.isInitialized);
+  DatabaseValue._({this.isInitialized = false});
+  DatabaseValue _copyWith({bool? isInitialized}) =>
+      DatabaseValue._(isInitialized: isInitialized ?? this.isInitialized);
 }
 
 class Database {
   static Database? _instance;
   sqlite3.Database? _db;
 
-  static DatabaseValue _value = DatabaseValue();
+  static String? _path;
+  static String? get path => _path;
+  static set path(String? newPath) {
+    if (_instance != null) {
+      throw StateError(
+        "Cannot change the database path after the database has been initialized.",
+      );
+    }
+    _path = newPath;
+  }
+
+  static DatabaseValue _value = DatabaseValue._();
   static DatabaseValue get value => _value;
 
   Future<void> _load() async {
     _db = sqlite3.sqlite3.open(
-      "${(await getApplicationDocumentsDirectory()).path}/database.db",
+      _path ?? "${(await getApplicationDocumentsDirectory()).path}/database.db",
     );
   }
 
   Database._();
 
   void dispose() {
-    _db?.dispose();
+    _db?.close();
     _instance = null;
   }
 
   static Future<Database> get instance async {
     _instance ??= Database._();
     if (_instance!._db == null) await _instance!._load();
-    _value = _value.copyWith(isInitialized: true);
+    _value = _value._copyWith(isInitialized: true);
     return _instance!;
   }
 
@@ -76,7 +89,7 @@ class Database {
 }
 
 class KeyValueDatabase<K, V> {
-  late String table;
+  late final String table;
   final Map<K, V> _data = {};
 
   Future<void> _checkTable() async {
@@ -106,7 +119,7 @@ class KeyValueDatabase<K, V> {
   Future<void> _loadData() async {
     final result = (await Database.instance).select("SELECT * FROM $table");
     for (final row in result) {
-      print(row);
+      // print(row);
       assert(
         row["key"] is K,
         "Malformed key data in database:\n${row["key"].toString().overflow(21)} (type ${row["key"].runtimeType}) can't be cast onto $K",
@@ -138,6 +151,8 @@ class KeyValueDatabase<K, V> {
     return _data[key];
   }
 
+  // Not possible with operators
+  // ignore: avoid_void_async
   void operator []=(K key, V value) async {
     await awaitableSetter(key, value);
   }

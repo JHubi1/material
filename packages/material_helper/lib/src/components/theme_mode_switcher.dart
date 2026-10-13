@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/app_localizations.dart';
 import '../l10n/app_localizations_en.dart';
@@ -77,7 +77,7 @@ class _ThemeModeSwitcherState extends State<ThemeModeSwitcher> {
         (widget.themeMode ?? ThemePreferences.instance.themeMode).name,
       },
       onSelectionChanged: (value) {
-        var themeMode = themeModeFromString(value.first);
+        final themeMode = themeModeFromString(value.first);
         if (widget.onChanged != null) {
           widget.onChanged!.call(themeMode);
         } else {
