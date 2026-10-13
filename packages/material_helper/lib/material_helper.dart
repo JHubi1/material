@@ -1,6 +1,8 @@
 /// Material Helper Library
 library;
 
+export 'package:dynamic_color/dynamic_color.dart'
+    show ColorHarmonization, ColorSchemeHarmonization;
 export 'package:package_info_plus/package_info_plus.dart';
 export 'package:path_provider/path_provider.dart';
 export 'package:url_launcher/url_launcher.dart';
@@ -25,5 +27,4 @@ export 'src/components/settings_screen.dart';
 export 'src/components/tally_counter.dart';
 export 'src/components/theme_mode_switcher.dart';
 export 'src/components/themed_material_app.dart';
-export 'src/components/transitions.dart';
 export 'src/l10n/app_localizations.dart';
