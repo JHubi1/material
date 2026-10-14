@@ -138,6 +138,14 @@ class MaterialCompleterLoadedWidget<T> extends MaterialFutureLoadedWidget<T> {
   }) : super(future: completer.future);
 }
 
+class _FutureResultCacheEntry {
+  final Object? value;
+  const _FutureResultCacheEntry(this.value);
+}
+
+final Expando<_FutureResultCacheEntry> _futureResultCache =
+    Expando<_FutureResultCacheEntry>();
+
 class _MaterialFutureLoadedWidgetBody<T> extends StatefulWidget {
   final Future<T> future;
   final Widget Function(BuildContext context, T value) builder;
@@ -165,7 +173,7 @@ class _MaterialFutureLoadedWidgetBodyState<T>
 
   @override
   void initState() {
-    widget.future.then(_processFuture(_futureLock));
+    _attachToFuture(widget.future, _futureLock);
     super.initState();
   }
 
@@ -175,17 +183,29 @@ class _MaterialFutureLoadedWidgetBodyState<T>
       _futureLock++;
       isLoaded = false;
       value = null;
-      widget.future.then(_processFuture(_futureLock));
+      _attachToFuture(widget.future, _futureLock);
     }
     super.didUpdateWidget(oldWidget);
   }
 
-  void Function(T value) _processFuture(int lock) => (T value) {
-    if (!mounted || _futureLock != lock) return;
-    isLoaded = true;
-    this.value = value;
-    if (mounted) setState(() {});
-  };
+  void _attachToFuture(Future<T> future, int lock) {
+    final cached = _futureResultCache[future];
+    if (cached != null) {
+      isLoaded = true;
+      value = cached.value as T;
+      return;
+    }
+    future.then(_processFuture(future, lock));
+  }
+
+  void Function(T value) _processFuture(Future<T> future, int lock) =>
+      (T value) {
+        _futureResultCache[future] = _FutureResultCacheEntry(value);
+        if (!mounted || _futureLock != lock) return;
+        isLoaded = true;
+        this.value = value;
+        if (mounted) setState(() {});
+      };
 
   @override
   Widget build(BuildContext context) => widget.buildLoader(
