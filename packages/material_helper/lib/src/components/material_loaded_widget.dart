@@ -108,6 +108,8 @@ class MaterialFutureLoadedWidget<T> extends MaterialLoadedWidget {
   final Future<T> future;
   final Widget Function(BuildContext context, T value) builder;
 
+  final Duration loaderGraceDuration;
+
   const MaterialFutureLoadedWidget({
     super.key,
     required this.future,
@@ -115,14 +117,17 @@ class MaterialFutureLoadedWidget<T> extends MaterialLoadedWidget {
     super.loaderSize,
     super.loaderConstraints,
     super.loaderBuilder,
+    this.loaderGraceDuration = Durations.short4,
     required this.builder,
   });
 
   @override
   Widget build(BuildContext context) => _MaterialFutureLoadedWidgetBody<T>(
+    key: key,
     future: future,
     builder: builder,
     buildLoader: _buildLoader,
+    graceDuration: loaderGraceDuration,
   );
 }
 
@@ -134,6 +139,7 @@ class MaterialCompleterLoadedWidget<T> extends MaterialFutureLoadedWidget<T> {
     super.loaderSize,
     super.loaderConstraints,
     super.loaderBuilder,
+    super.loaderGraceDuration,
     required super.builder,
   }) : super(future: completer.future);
 }
@@ -151,12 +157,14 @@ class _MaterialFutureLoadedWidgetBody<T> extends StatefulWidget {
   final Widget Function(BuildContext context, T value) builder;
   final Widget Function(BuildContext, {bool state, required Widget? child})
   buildLoader;
+  final Duration graceDuration;
 
   const _MaterialFutureLoadedWidgetBody({
     super.key,
     required this.future,
     required this.builder,
     required this.buildLoader,
+    required this.graceDuration,
   });
 
   @override
@@ -169,11 +177,13 @@ class _MaterialFutureLoadedWidgetBodyState<T>
   int _futureLock = 0;
 
   bool isLoaded = false;
+  bool _hasValue = false;
   T? value;
+  Timer? _graceTimer;
 
   @override
   void initState() {
-    _attachToFuture(widget.future, _futureLock);
+    _attachToFuture(widget.future, _futureLock, isReload: false);
     super.initState();
   }
 
@@ -181,20 +191,38 @@ class _MaterialFutureLoadedWidgetBodyState<T>
   void didUpdateWidget(covariant _MaterialFutureLoadedWidgetBody<T> oldWidget) {
     if (oldWidget.future != widget.future) {
       _futureLock++;
-      isLoaded = false;
-      value = null;
-      _attachToFuture(widget.future, _futureLock);
+      _attachToFuture(widget.future, _futureLock, isReload: true);
     }
     super.didUpdateWidget(oldWidget);
   }
 
-  void _attachToFuture(Future<T> future, int lock) {
+  @override
+  void dispose() {
+    _graceTimer?.cancel();
+    super.dispose();
+  }
+
+  void _attachToFuture(Future<T> future, int lock, {required bool isReload}) {
+    _graceTimer?.cancel();
+    _graceTimer = null;
+
     final cached = _futureResultCache[future];
     if (cached != null) {
       isLoaded = true;
+      _hasValue = true;
       value = cached.value as T;
       return;
     }
+
+    if (isReload && _hasValue && widget.graceDuration > Duration.zero) {
+      _graceTimer = Timer(widget.graceDuration, () {
+        if (!mounted || _futureLock != lock) return;
+        setState(() => isLoaded = false);
+      });
+    } else {
+      isLoaded = false;
+    }
+
     future.then(_processFuture(future, lock));
   }
 
@@ -202,9 +230,12 @@ class _MaterialFutureLoadedWidgetBodyState<T>
       (T value) {
         _futureResultCache[future] = _FutureResultCacheEntry(value);
         if (!mounted || _futureLock != lock) return;
+        _graceTimer?.cancel();
+        _graceTimer = null;
         isLoaded = true;
+        _hasValue = true;
         this.value = value;
-        if (mounted) setState(() {});
+        setState(() {});
       };
 
   @override
