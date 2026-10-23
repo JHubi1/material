@@ -5,10 +5,13 @@ import 'package:material_ui/material_ui.dart';
 import 'radio_dialog.dart';
 import 'scrolling_alert_dialog.dart';
 
-String checkDialogDefaultTitleGenerator<T>(Iterable<T> items) {
+String checkDialogDefaultTitleGenerator<T>(
+  Iterable<T> items,
+  RadioDialogObjectGenerator<T, String>? titleGenerator,
+) {
   final formatted = <String>[];
   for (var i in items) {
-    formatted.add(radioDialogDefaultTitleGenerator<T>(i));
+    formatted.add((titleGenerator ?? radioDialogDefaultTitleGenerator).call(i));
   }
   return formatted.map((s) => s.trim()).join(", ");
 }

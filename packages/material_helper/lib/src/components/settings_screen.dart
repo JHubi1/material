@@ -466,7 +466,10 @@ class RadioSettingsOption<T extends Object> extends SettingsOption {
       title: Text(title),
       subtitle: Text(
         value != null
-            ? (titleGenerator ?? radioDialogDefaultTitleGenerator).call(value!)
+            ? (titleGenerator ??
+                      titleGenerator ??
+                      radioDialogDefaultTitleGenerator)
+                  .call(value!)
             : event.unavailableCharacter,
       ),
       onTap: () async {
@@ -540,7 +543,7 @@ class CheckSettingsOption<T extends Object> extends SettingsOption {
       title: Text(title),
       subtitle: Text(
         value.isNotEmpty
-            ? checkDialogDefaultTitleGenerator(value)
+            ? checkDialogDefaultTitleGenerator(value, titleGenerator)
             : event.unavailableCharacter,
       ),
       onTap: () async {

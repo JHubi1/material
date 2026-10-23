@@ -1,5 +1,5 @@
 import 'package:material_helper/material_helper.dart';
-import 'package:material_ui/material_ui.dart' hide MaterialShapes;
+import 'package:material_ui/material_ui.dart';
 
 import 'material_shapes.dart';
 
@@ -63,8 +63,7 @@ class _ShapeDemoDialogState extends State<ShapeDemoDialog>
                       ? values[index + 1]
                       : values[0];
                   return Container(
-                    decoration: Morph(shape, next).toShapeDecoration(
-                      progress: animation.value,
+                    decoration: ShapeDecoration(
                       color: ColorTween(
                         begin: highlight.contains(shape)
                             ? ColorScheme.of(context).primary
@@ -72,6 +71,10 @@ class _ShapeDemoDialogState extends State<ShapeDemoDialog>
                         end: highlight.contains(next)
                             ? ColorScheme.of(context).primary
                             : ColorScheme.of(context).primaryContainer,
+                      ).evaluate(animation)!,
+                      shape: ShapeBorderTween(
+                        begin: MaterialShapeBorder(shape: shape),
+                        end: MaterialShapeBorder(shape: next),
                       ).evaluate(animation)!,
                     ),
                     margin: EdgeInsets.all(8),

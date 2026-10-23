@@ -2,7 +2,10 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:material_graphics/material_graphics.dart';
-import 'package:material_ui/material_ui.dart' hide MaterialShapes;
+import 'package:material_ui/material_ui.dart';
+// material_ui doesn't expose transformed function publicly
+// ignore: implementation_imports
+import 'package:material_ui/src/shapes/rounded_polygon.dart';
 
 enum MaterialLoadingIndicatorStyle { normal, contained }
 
@@ -13,7 +16,7 @@ class MaterialLoadingIndicator extends StatefulWidget {
 
   const MaterialLoadingIndicator({
     super.key,
-    this.size = 48,
+    this.size = MaterialLoadingIndicatorSizes.medium,
     this.style = MaterialLoadingIndicatorStyle.normal,
     this.semanticLabel,
   });
@@ -32,28 +35,33 @@ class _MaterialLoadingIndicatorState extends State<MaterialLoadingIndicator>
   final _sre = 180.0;
   var _loadingIndicatorIndex = 0;
   late final _loadingIndicatorShapes = [
-    MaterialShapes.softBurst
-        .transformed(MaterialShapesPointTransformers.rotateDegrees(-_sre))
-        .normalized(),
-    MaterialShapes.cookie9Sided
-        .transformed(MaterialShapesPointTransformers.rotateDegrees(-_sre))
-        .normalized(),
-    MaterialShapes.pentagon
-        .transformed(MaterialShapesPointTransformers.rotateDegrees(-18 - _sre))
-        .normalized(),
-    MaterialShapes.pill
-        .transformed(MaterialShapesPointTransformers.rotateDegrees(60 - _sre))
-        .normalized(),
-    MaterialShapes.sunny
-        .transformed(MaterialShapesPointTransformers.rotateDegrees(5 - _sre))
-        .normalized(),
-    MaterialShapes.cookie4Sided
-        .transformed(MaterialShapesPointTransformers.rotateDegrees(-15 - _sre))
-        .normalized(),
-    MaterialShapes.oval
-        .transformed(MaterialShapesPointTransformers.rotateDegrees(-70 - _sre))
-        .normalized(),
+    MaterialShapes.softBurst.transformed(
+      MaterialShapesPointTransformers.rotateDegreesCentered(-_sre),
+    ),
+    MaterialShapes.cookie9Sided.transformed(
+      MaterialShapesPointTransformers.rotateDegreesCentered(-_sre),
+    ),
+    MaterialShapes.pentagon.transformed(
+      MaterialShapesPointTransformers.rotateDegreesCentered(-18 - _sre),
+    ),
+    MaterialShapes.pill.transformed(
+      MaterialShapesPointTransformers.rotateDegreesCentered(60 - _sre),
+    ),
+    MaterialShapes.sunny.transformed(
+      MaterialShapesPointTransformers.rotateDegreesCentered(5 - _sre),
+    ),
+    MaterialShapes.cookie4Sided.transformed(
+      MaterialShapesPointTransformers.rotateDegreesCentered(-15 - _sre),
+    ),
+    MaterialShapes.oval.transformed(
+      MaterialShapesPointTransformers.rotateDegreesCentered(-70 - _sre),
+    ),
   ];
+
+  late final _shapeScale = _loadingIndicatorShapes
+      .map((shape) => 1 / shape.calculateMaxBounds().width)
+      .reduce(math.min)
+      .clamp(0.0, 1.0);
 
   @override
   void initState() {
@@ -131,22 +139,28 @@ class _MaterialLoadingIndicatorState extends State<MaterialLoadingIndicator>
               : Curves.easeInOut,
         );
 
-        final shape =
-            Morph(
-              _loadingIndicatorShapes[_loadingIndicatorIndex %
-                      _loadingIndicatorShapes.length]
-                  .transformed(
-                    MaterialShapesPointTransformers.rotateDegrees(_sre),
-                  )
-                  .normalized(),
-              _loadingIndicatorShapes[(_loadingIndicatorIndex + 1) %
-                  _loadingIndicatorShapes.length],
-            ).toShapeDecoration(
-              progress: curved1.evaluate(_shapeController),
-              color: widget.style == MaterialLoadingIndicatorStyle.contained
-                  ? colorScheme.onPrimaryContainer
-                  : colorScheme.primary,
-            );
+        final shape = ShapeDecoration(
+          color: widget.style == MaterialLoadingIndicatorStyle.contained
+              ? colorScheme.onPrimaryContainer
+              : colorScheme.primary,
+          shape: ShapeBorderTween(
+            begin: MaterialShapeBorder(
+              shape:
+                  _loadingIndicatorShapes[_loadingIndicatorIndex %
+                          _loadingIndicatorShapes.length]
+                      .transformed(
+                        MaterialShapesPointTransformers.rotateDegreesCentered(
+                          _sre,
+                        ),
+                      ),
+            ),
+            end: MaterialShapeBorder(
+              shape:
+                  _loadingIndicatorShapes[(_loadingIndicatorIndex + 1) %
+                      _loadingIndicatorShapes.length],
+            ),
+          ).evaluate(curved1.animate(_shapeController))!,
+        );
         final rotate = Tween<double>(
           begin: 0,
           end: _sre / 180 * math.pi,
@@ -156,14 +170,14 @@ class _MaterialLoadingIndicatorState extends State<MaterialLoadingIndicator>
           end: 1.05,
         ).chain(eased).evaluate(_scaleController);
 
-        Widget res = Transform.scale(
-          scale: scale,
-          child: Transform.rotate(
-            angle: rotate,
-            child: Container(
-              width: 34 * widgetScale,
-              height: 34 * widgetScale,
-              decoration: shape,
+        Widget res = SizedBox(
+          width: 38 * widgetScale,
+          height: 38 * widgetScale,
+          child: Transform.scale(
+            scale: scale * _shapeScale,
+            child: Transform.rotate(
+              angle: rotate,
+              child: DecoratedBox(decoration: shape),
             ),
           ),
         );
@@ -176,7 +190,7 @@ class _MaterialLoadingIndicatorState extends State<MaterialLoadingIndicator>
               color: colorScheme.primaryContainer,
               shape: BoxShape.circle,
             ),
-            padding: EdgeInsets.all(7 * widgetScale),
+            padding: EdgeInsets.all(5 * widgetScale),
             child: res,
           );
         }
