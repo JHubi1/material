@@ -1,7 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:material_new_shapes/material_new_shapes.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:material_ui/material_ui.dart'
+    hide MaterialShapes, RoundedPolygon;
 
 export 'package:material_new_shapes/material_new_shapes.dart';
 

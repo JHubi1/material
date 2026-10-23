@@ -1,5 +1,5 @@
 import 'package:material_helper/material_helper.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:material_ui/material_ui.dart' hide MaterialShapes;
 
 import 'material_shapes.dart';
 

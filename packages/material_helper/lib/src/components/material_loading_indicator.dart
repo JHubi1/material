@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:material_graphics/material_graphics.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:material_ui/material_ui.dart' hide MaterialShapes;
 
 enum MaterialLoadingIndicatorStyle { normal, contained }
 

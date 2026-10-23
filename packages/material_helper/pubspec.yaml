@@ -10,7 +10,7 @@ resolution: workspace
 dependencies:
   flutter:
     sdk: flutter
-  material_ui: ^1.6.0
+  material_ui: ^1.8.0
   flutter_localizations:
     sdk: flutter
   material_graphics: any
