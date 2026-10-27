@@ -306,6 +306,9 @@ class _ThemedMaterialAppState extends State<ThemedMaterialApp> {
     ThemePreferences.instance.addListener(onUpdate);
     runningTime.start();
     mg.registerLicenses(context);
+
+    precacheImage(const AssetImage("assets/icon/icon.png"), context);
+    precacheImage(const AssetImage("assets/icon/iconDark.png"), context);
   }
 
   @override
