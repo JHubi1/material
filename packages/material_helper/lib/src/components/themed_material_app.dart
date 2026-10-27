@@ -307,8 +307,10 @@ class _ThemedMaterialAppState extends State<ThemedMaterialApp> {
     runningTime.start();
     mg.registerLicenses(context);
 
-    precacheImage(const AssetImage("assets/icon/icon.png"), context);
-    precacheImage(const AssetImage("assets/icon/iconDark.png"), context);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      precacheImage(const AssetImage("assets/icon/icon.png"), context);
+      precacheImage(const AssetImage("assets/icon/iconDark.png"), context);
+    });
   }
 
   @override
