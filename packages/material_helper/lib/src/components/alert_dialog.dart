@@ -2,7 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import 'scrolling_alert_dialog.dart';
 
-Future<void> showInfoDialog({
+Future<void> showAlertDialog({
   required BuildContext context,
   Widget? icon,
   Color? iconColor,

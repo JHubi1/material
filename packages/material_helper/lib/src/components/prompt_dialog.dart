@@ -201,6 +201,8 @@ class _PromptDialogState extends State<PromptDialog> {
   final focusNode = FocusNode();
   late final TextEditingController controller;
 
+  late bool isObscured = widget.obscure;
+
   String? errorText;
   bool get loading => loadingValidation || (loadingAction ?? false);
   bool loadingValidation = false;
@@ -215,11 +217,13 @@ class _PromptDialogState extends State<PromptDialog> {
         if (mounted) setState(() {});
         focusTextField();
       } else {
-        _loadingAction = null;
+        final needsConfirmation = widget.action?.needsConfirmation ?? true;
+
+        _loadingAction = needsConfirmation ? null : value;
         if (mounted) setState(() {});
         focusTextField();
 
-        if (!loadingValidation) {
+        if (!loadingValidation && needsConfirmation) {
           Future.delayed(Durations.extralong4).then((_) {
             _loadingAction = value;
             if (mounted) setState(() {});
@@ -293,10 +297,13 @@ class _PromptDialogState extends State<PromptDialog> {
     setState(() => errorText = null);
 
     var doSubmit = false;
+    bool? obscure;
+
     final event = PromptDialogActionEvent._(
       setValue: ([value]) => controller.text = value ?? "",
       getValue: () => controller.text,
       submit: () => doSubmit = true,
+      setObscure: ([value]) => obscure = value ?? !isObscured,
     );
 
     loadingAction = true;
@@ -307,6 +314,7 @@ class _PromptDialogState extends State<PromptDialog> {
       if (mounted) setState(() {});
     }
     if (doSubmit) submit();
+    if (obscure != null) setState(() => isObscured = obscure!);
     loadingAction = false;
   }
 
@@ -421,7 +429,7 @@ class _PromptDialogState extends State<PromptDialog> {
                           }) => null
                         : null,
 
-                    obscureText: widget.obscure,
+                    obscureText: isObscured,
                     autocorrect: widget.autocorrect,
                     enableSuggestions: widget.autocorrect
                         ? widget.enableSuggestions
@@ -516,8 +524,9 @@ Future<String?> showPromptDialog({
   );
 }
 
-typedef PromptDialogActionCallback =
-    FutureOr<void> Function(PromptDialogActionEvent event);
+typedef PromptDialogActionCallback = FutureOr<void> Function(
+  PromptDialogActionEvent event,
+);
 typedef PromptDialogActionCondition = bool Function(String value);
 
 /// An action for a [PromptDialog].
@@ -526,11 +535,14 @@ class PromptDialogAction {
   final String? label;
   final PromptDialogActionCallback invoke;
   final PromptDialogActionCondition? condition;
+  final bool needsConfirmation;
+
   const PromptDialogAction({
     this.icon,
     this.label,
     required this.invoke,
     this.condition,
+    this.needsConfirmation = true,
   });
 }
 
@@ -538,10 +550,12 @@ class PromptDialogActionEvent {
   /// Set the value of the input field.
   ///
   /// If [value] is null or not provided, the input field will be cleared.
-  void Function([String? value]) setValue;
+  void setValue([String? value]) => _setValue.call(value);
+  final void Function([String? value]) _setValue;
 
   /// Get the current value of the input field.
-  String Function() getValue;
+  String getValue() => _getValue.call();
+  final String Function() _getValue;
 
   /// Mark the result as final and submit the dialog.
   ///
@@ -549,12 +563,20 @@ class PromptDialogActionEvent {
   /// [PromptDialogAction.invoke] method has completed.
   ///
   /// If the validation fails, the dialog will not be closed.
-  void Function() submit;
+  void submit() => _submit.call();
+  final void Function() _submit;
+
+  /// Sets the obscure state of the input field.
+  ///
+  /// If [obscure] is true, the input field will hide the entered text.
+  void setObscure([bool? obscure]) => _setObscure.call(obscure);
+  final void Function([bool? obscure]) _setObscure;
 
   PromptDialogActionEvent._({
-    required this.setValue,
-    required this.getValue,
-    required this.submit,
+    required this._setValue,
+    required this._getValue,
+    required this._submit,
+    required this._setObscure,
   });
 }
 
@@ -578,4 +600,15 @@ abstract class PromptDialogActions {
     invoke: (event) => Clipboard.setData(ClipboardData(text: event.getValue())),
     condition: (value) => value.isNotEmpty,
   );
+
+  static PromptDialogAction toggleObscure(BuildContext context) =>
+      PromptDialogAction(
+        icon: Icons.visibility,
+        label:
+            (MaterialHelperLocalizations.of(context) ??
+                    MaterialHelperLocalizationsEn())
+                .promptDialogActionToggleObscure,
+        invoke: (event) => event.setObscure(),
+        needsConfirmation: false,
+      );
 }

@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -29,6 +30,9 @@ class MaterialHelperLocalizationsDe extends MaterialHelperLocalizations {
   String get themeModeSwitcherLight => 'Hell';
 
   @override
+  String get confirmationDialogActionContinue => 'Fortfahren';
+
+  @override
   String get promptDialogActionInvoke => 'Aktion ausführen';
 
   @override
@@ -36,6 +40,9 @@ class MaterialHelperLocalizationsDe extends MaterialHelperLocalizations {
 
   @override
   String get promptDialogActionCopy => 'Kopieren';
+
+  @override
+  String get promptDialogActionToggleObscure => 'Sichtbarkeit umschalten';
 
   @override
   String get aboutScreenTitle => 'Über';

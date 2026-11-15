@@ -3,9 +3,12 @@ import 'package:material_ui/material_ui.dart';
 import '../../material_helper.dart';
 import '../l10n/app_localizations_en.dart';
 
-typedef SettingsScreenWidgetBuilder =
-    Widget Function(BuildContext context, SettingsScreenBuildEvent event);
+typedef SettingsScreenWidgetBuilder = Widget Function(
+  BuildContext context,
+  SettingsScreenBuildEvent event,
+);
 typedef SettingsScreenScreenBuilder = SettingsConfig Function();
+typedef SettingsScreenDependantVoidValueBuilder<T> = T Function();
 typedef SettingsScreenDependantValueBuilder<T, S> = T Function(S state);
 
 class SettingsScreen extends StatefulWidget {
@@ -75,6 +78,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
+/// Shows a specific settings screen.
+///
+/// To enable hot reloading, make sure to not configure the settings screen
+/// directly in an anonymous function. Instead, do something like:
+///
+/// ```dart
+/// Future<void> showSettings(BuildContext context) =>
+///     showSettingsScreen(context, config: () => settings(context));
+/// ```
 Future<void> showSettingsScreen(
   BuildContext context, {
   SettingsScreenScreenBuilder? config,
@@ -164,8 +176,22 @@ abstract class SettingsOption extends _BuildableObject<Widget> {
   final Widget? icon;
   final String title;
   final String? subtitle;
+  final SettingsScreenDependantVoidValueBuilder<bool>? enabled;
 
-  const SettingsOption({this.icon, required this.title, this.subtitle});
+  const SettingsOption({
+    this.icon,
+    required this.title,
+    this.subtitle,
+    this.enabled,
+  });
+
+  bool isEnabled<S extends Object?>(
+    S? value, [
+    SettingsScreenDependantValueBuilder<bool, S>? enabledFromValue,
+  ]) =>
+      (value != null ? enabledFromValue?.call(value) : null) ??
+      enabled?.call() ??
+      true;
 }
 
 class CustomSettingsOption extends SettingsOption {
@@ -180,6 +206,7 @@ class CustomSettingsOption extends SettingsOption {
     super.subtitle,
     this.onTap,
     this.onLongPress,
+    super.enabled,
   });
 
   @override
@@ -189,8 +216,19 @@ class CustomSettingsOption extends SettingsOption {
         title: Text(title),
         titleStyle: titleStyle,
         subtitle: subtitle != null ? Text(subtitle!) : null,
-        onTap: onTap,
-        onLongPress: onLongPress,
+        onTap: onTap != null
+            ? () {
+                onTap?.call();
+                event.onChanged();
+              }
+            : null,
+        onLongPress: onLongPress != null
+            ? () {
+                onLongPress?.call();
+                event.onChanged();
+              }
+            : null,
+        enabled: isEnabled(null),
       );
 }
 
@@ -213,7 +251,7 @@ class SettingsOptionBuilder extends SettingsOption {
 class SwitchSettingsOption extends SettingsOption {
   final bool value;
   final ValueChanged<bool> onChanged;
-  final SettingsScreenDependantValueBuilder<bool, bool>? enabled;
+  final SettingsScreenDependantValueBuilder<bool, bool>? enabledFromValue;
 
   const SwitchSettingsOption({
     super.icon,
@@ -221,14 +259,15 @@ class SwitchSettingsOption extends SettingsOption {
     super.subtitle,
     required this.value,
     required this.onChanged,
-    this.enabled,
+    super.enabled,
+    this.enabledFromValue,
   });
 
   @override
   Widget build(BuildContext context, SettingsScreenBuildEvent event) {
     return MaterialSwitchListTile(
       value: value,
-      onChanged: (enabled?.call(value) ?? true)
+      onChanged: isEnabled(value, enabledFromValue)
           ? (value) {
               onChanged(value);
               event.onChanged();
@@ -256,7 +295,8 @@ class SplitSwitchSettingsOption extends SwitchSettingsOption {
 
   @override
   Widget build(BuildContext context, SettingsScreenBuildEvent event) {
-    final effectiveOnChanged = (enabled?.call(value) ?? true)
+    final enabled = isEnabled(value, enabledFromValue);
+    final effectiveOnChanged = enabled
         ? (value) {
             onChanged(value);
             event.onChanged();
@@ -264,7 +304,7 @@ class SplitSwitchSettingsOption extends SwitchSettingsOption {
         : null;
     return MaterialSplitSwitchListTile(
       value: value,
-      onTap: () => event.openNewScreen(newScreen.call),
+      onTap: enabled ? () => event.openNewScreen(newScreen.call) : () {},
       onChanged: effectiveOnChanged,
       secondary: icon,
       title: Text(title),
@@ -321,6 +361,7 @@ class InputSettingsOption extends SettingsOption {
     this.capitalization = TextCapitalization.sentences,
     this.keyboardType = TextInputType.text,
     this.action,
+    super.enabled,
   });
 
   @override
@@ -336,33 +377,36 @@ class InputSettingsOption extends SettingsOption {
             ? value!
             : event.unavailableCharacter,
       ),
-      onTap: () async {
-        final res = await showPromptDialog(
-          context: context,
-          title: dialogTitle ?? localizations.setValue(title),
-          description: dialogSubtitle,
-          prefixText: dialogPrefixText,
-          prefixIcon: dialogPrefixIcon,
-          content: value,
-          placeholder: dialogPlaceholder,
-          suffixText: dialogSuffixText,
-          suffixIcon: dialogSuffixIcon,
-          validator: validator,
-          quickValidator: quickValidator ?? (s) => allowEmpty || s.isNotEmpty,
-          manipulator: manipulator,
-          obscure: obscure,
-          maxLines: maxLines,
-          autocorrect: autocorrect,
-          autofillHints: autofillHints,
-          capitalization: capitalization,
-          keyboardType: keyboardType,
-          action: action,
-        );
-        if (res == null || res == value) return;
-        onChanged(res);
-        event.onChanged();
-      },
-      onLongPress: allowEmpty
+      onTap: isEnabled(value)
+          ? () async {
+              final res = await showPromptDialog(
+                context: context,
+                title: dialogTitle ?? localizations.setValue(title),
+                description: dialogSubtitle,
+                prefixText: dialogPrefixText,
+                prefixIcon: dialogPrefixIcon,
+                content: value,
+                placeholder: dialogPlaceholder,
+                suffixText: dialogSuffixText,
+                suffixIcon: dialogSuffixIcon,
+                validator: validator,
+                quickValidator:
+                    quickValidator ?? (s) => allowEmpty || s.isNotEmpty,
+                manipulator: manipulator,
+                obscure: obscure,
+                maxLines: maxLines,
+                autocorrect: autocorrect,
+                autofillHints: autofillHints,
+                capitalization: capitalization,
+                keyboardType: keyboardType,
+                action: action,
+              );
+              if (res == null || res == value) return;
+              onChanged(res);
+              event.onChanged();
+            }
+          : null,
+      onLongPress: allowEmpty && isEnabled(value)
           ? () {
               onChanged("");
               event.onChanged();
@@ -392,6 +436,7 @@ class NumInputSettingsOption<T extends num> extends InputSettingsOption {
     super.autofillHints,
     TextInputType? keyboardType,
     super.action,
+    super.enabled,
   }) : super(
          value: value.toString(),
          onChanged: (value) => onChanged.call(numParse<T>(value)),
@@ -454,6 +499,7 @@ class RadioSettingsOption<T extends Object> extends SettingsOption {
     this.enabledGenerator,
     required this.onChanged,
     this.allowEmpty = false,
+    super.enabled,
   });
 
   @override
@@ -472,28 +518,30 @@ class RadioSettingsOption<T extends Object> extends SettingsOption {
                   .call(value!)
             : event.unavailableCharacter,
       ),
-      onTap: () async {
-        var didSubmit = false;
-        final res = await showRadioDialog<T>(
-          context: context,
-          title: dialogTitle ?? localizations.setValue(title),
-          description: dialogSubtitle,
-          initialValue: value,
-          items: items,
-          titleGenerator: titleGenerator,
-          subtitleGenerator: subtitleGenerator,
-          iconGenerator: iconGenerator,
-          enabledGenerator: enabledGenerator,
-          toggleable: allowEmpty,
-          allowEmptySelection: allowEmpty,
-          onSubmit: (_) => didSubmit = true,
-        );
+      onTap: isEnabled(value)
+          ? () async {
+              var didSubmit = false;
+              final res = await showRadioDialog<T>(
+                context: context,
+                title: dialogTitle ?? localizations.setValue(title),
+                description: dialogSubtitle,
+                initialValue: value,
+                items: items,
+                titleGenerator: titleGenerator,
+                subtitleGenerator: subtitleGenerator,
+                iconGenerator: iconGenerator,
+                enabledGenerator: enabledGenerator,
+                toggleable: allowEmpty,
+                allowEmptySelection: allowEmpty,
+                onSubmit: (_) => didSubmit = true,
+              );
 
-        if (!didSubmit || res == value) return;
-        onChanged(res);
-        event.onChanged();
-      },
-      onLongPress: allowEmpty
+              if (!didSubmit || res == value) return;
+              onChanged(res);
+              event.onChanged();
+            }
+          : null,
+      onLongPress: allowEmpty && isEnabled(value)
           ? () {
               onChanged(null);
               event.onChanged();
@@ -531,6 +579,7 @@ class CheckSettingsOption<T extends Object> extends SettingsOption {
     this.enabledGenerator,
     required this.onChanged,
     this.allowEmpty = false,
+    super.enabled,
   });
 
   @override
@@ -546,27 +595,29 @@ class CheckSettingsOption<T extends Object> extends SettingsOption {
             ? checkDialogDefaultTitleGenerator(value, titleGenerator)
             : event.unavailableCharacter,
       ),
-      onTap: () async {
-        var didSubmit = false;
-        final res = await showCheckDialog<T>(
-          context: context,
-          title: dialogTitle ?? localizations.setValue(title),
-          description: dialogSubtitle,
-          initialValue: value,
-          items: items,
-          titleGenerator: titleGenerator,
-          subtitleGenerator: subtitleGenerator,
-          iconGenerator: iconGenerator,
-          enabledGenerator: enabledGenerator,
-          allowEmptySelection: allowEmpty,
-          onSubmit: (_) => didSubmit = true,
-        );
+      onTap: isEnabled(value)
+          ? () async {
+              var didSubmit = false;
+              final res = await showCheckDialog<T>(
+                context: context,
+                title: dialogTitle ?? localizations.setValue(title),
+                description: dialogSubtitle,
+                initialValue: value,
+                items: items,
+                titleGenerator: titleGenerator,
+                subtitleGenerator: subtitleGenerator,
+                iconGenerator: iconGenerator,
+                enabledGenerator: enabledGenerator,
+                allowEmptySelection: allowEmpty,
+                onSubmit: (_) => didSubmit = true,
+              );
 
-        if (!didSubmit || res == value) return;
-        onChanged(res ?? {});
-        event.onChanged();
-      },
-      onLongPress: allowEmpty
+              if (!didSubmit || res == value) return;
+              onChanged(res ?? {});
+              event.onChanged();
+            }
+          : null,
+      onLongPress: allowEmpty && isEnabled(value)
           ? () {
               onChanged({});
               event.onChanged();
@@ -583,6 +634,7 @@ class NavigationSettingsOption extends SettingsOption {
     super.icon,
     required super.title,
     super.subtitle,
+    super.enabled,
     required this.newScreen,
   });
 
@@ -592,7 +644,8 @@ class NavigationSettingsOption extends SettingsOption {
       leading: icon,
       title: Text(title),
       subtitle: subtitle != null ? Text(subtitle!) : null,
-      onTap: () => event.openNewScreen(newScreen),
+      onTap: isEnabled(null) ? () => event.openNewScreen(newScreen) : null,
+      enabled: enabled?.call() ?? true,
     );
   }
 }

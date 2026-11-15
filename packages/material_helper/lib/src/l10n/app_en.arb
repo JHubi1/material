@@ -37,6 +37,11 @@
         "description": "Description of the light theme mode switcher",
         "context": "Component:ThemeModeSwitcher"
     },
+    "confirmationDialogActionContinue": "Continue",
+    "@confirmationDialogActionContinue": {
+        "description": "Label for the continue action in a confirmation dialog",
+        "context": "Component:ConfirmationDialog"
+    },
     "promptDialogActionInvoke": "Invoke action",
     "@promptDialogActionInvoke": {
         "description": "Default label for the action button in a prompt dialog",
@@ -50,6 +55,11 @@
     "promptDialogActionCopy": "Copy",
     "@promptDialogActionCopy": {
         "description": "Label for the copy action in a prompt dialog",
+        "context": "Component:PromptDialog"
+    },
+    "promptDialogActionToggleObscure": "Toggle obscure",
+    "@promptDialogActionToggleObscure": {
+        "description": "Label for the toggle obscure action in a prompt dialog",
         "context": "Component:PromptDialog"
     },
     "aboutScreenTitle": "About",

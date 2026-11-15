@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:material_graphics/material_graphics.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/app_localizations.dart';
@@ -58,10 +59,22 @@ class MaterialListTileBorderStyle extends InheritedWidget {
   /// {@macro jhubi1.material.MaterialListTileBorder}
   final MaterialListTileBorder? borderBottom;
 
+  /// The style of the start list tile border.
+  ///
+  /// {@macro jhubi1.material.MaterialListTileBorder}
+  final MaterialListTileBorder? borderStart;
+
+  /// The style of the end list tile border.
+  ///
+  /// {@macro jhubi1.material.MaterialListTileBorder}
+  final MaterialListTileBorder? borderEnd;
+
   const MaterialListTileBorderStyle({
     super.key,
     this.borderTop,
     this.borderBottom,
+    this.borderStart,
+    this.borderEnd,
     required super.child,
   });
 
@@ -90,6 +103,9 @@ class MaterialListTileBorderStyle extends InheritedWidget {
 ///
 /// You should set the [borderTop] and [borderBottom] properties accordingly
 /// to get the desired look. See [MaterialListTileBorder] for more information.
+///
+/// To get a connected appearance to a list tile left or right of this one, use
+/// the [borderStart] and [borderEnd] properties.
 ///
 /// For stylistic consistency, if an icon is used, it should be using the
 /// outlined variant of the icon.
@@ -174,6 +190,16 @@ class MaterialListTile extends StatelessWidget {
   ///
   /// {@macro jhubi1.material.MaterialListTileBorder}
   final MaterialListTileBorder? borderBottom;
+
+  /// The style of the start list tile border.
+  ///
+  /// {@macro jhubi1.material.MaterialListTileBorder}
+  final MaterialListTileBorder? borderStart;
+
+  /// The style of the end list tile border.
+  ///
+  /// {@macro jhubi1.material.MaterialListTileBorder}
+  final MaterialListTileBorder? borderEnd;
 
   /// Defines the color used for icons and text when the list tile is selected.
   ///
@@ -349,6 +375,16 @@ class MaterialListTile extends StatelessWidget {
   ///  * [Feedback] for providing platform-specific feedback to certain actions.
   final bool? enableFeedback;
 
+  /// The padding that is applied around this list tile.
+  ///
+  /// This may not be changed, to keep a consistent layout with source. Defaults
+  /// to:
+  ///
+  /// ```dart
+  /// EdgeInsets.symmetric(vertical: 1, horizontal: 16)
+  /// ```
+  final EdgeInsetsGeometry? padding;
+
   const MaterialListTile({
     super.key,
     this.leading,
@@ -359,6 +395,8 @@ class MaterialListTile extends StatelessWidget {
     this.isThreeLine,
     this.borderTop,
     this.borderBottom,
+    this.borderStart,
+    this.borderEnd,
     this.selectedColor,
     this.iconColor,
     this.textColor,
@@ -380,6 +418,7 @@ class MaterialListTile extends StatelessWidget {
     this.tileColor,
     this.selectedTileColor,
     this.enableFeedback,
+    this.padding,
   });
 
   @override
@@ -398,22 +437,36 @@ class MaterialListTile extends StatelessWidget {
         this.borderBottom ??
         materialListTileBorderStyle?.borderBottom ??
         MaterialListTileBorder.closed;
+    final borderStart =
+        this.borderStart ??
+        materialListTileBorderStyle?.borderStart ??
+        MaterialListTileBorder.closed;
+    final borderEnd =
+        this.borderEnd ??
+        materialListTileBorderStyle?.borderEnd ??
+        MaterialListTileBorder.closed;
 
     const radiusClosed = 20.0;
     const radiusOpen = 4.0;
 
-    final topRadius = Radius.circular(
-      borderTop == MaterialListTileBorder.closed ? radiusClosed : radiusOpen,
+    final topStartRadius = Radius.circular(
+      borderTop == .open || borderStart == .open ? radiusOpen : radiusClosed,
     );
-    final bottomRadius = Radius.circular(
-      borderBottom == MaterialListTileBorder.closed ? radiusClosed : radiusOpen,
+    final topEndRadius = Radius.circular(
+      borderTop == .open || borderEnd == .open ? radiusOpen : radiusClosed,
+    );
+    final bottomStartRadius = Radius.circular(
+      borderBottom == .open || borderStart == .open ? radiusOpen : radiusClosed,
+    );
+    final bottomEndRadius = Radius.circular(
+      borderBottom == .open || borderEnd == .open ? radiusOpen : radiusClosed,
     );
     final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.only(
-        topLeft: topRadius,
-        topRight: topRadius,
-        bottomLeft: bottomRadius,
-        bottomRight: bottomRadius,
+      borderRadius: BorderRadiusDirectional.only(
+        topStart: topStartRadius,
+        topEnd: topEndRadius,
+        bottomStart: bottomStartRadius,
+        bottomEnd: bottomEndRadius,
       ),
     );
 
@@ -437,55 +490,60 @@ class MaterialListTile extends StatelessWidget {
                   colorScheme.surfaceBright,
               });
 
-    return Material(
-      color: Colors.transparent,
-      child: Padding(
-        padding: const EdgeInsets.only(top: 1, bottom: 1, left: 16, right: 16),
-        child: ListTile(
-          leading: leading,
-          title: title != null
-              ? Transform.translate(offset: Offset(0, 1), child: title)
-              : null,
-          subtitle: subtitle != null
-              ? Transform.translate(offset: Offset(0, -1), child: subtitle)
-              : null,
-          trailing: trailing,
-          isThreeLine: isThreeLine,
-          selectedColor: selectedColor ?? colorScheme.onPrimaryContainer,
-          iconColor: iconColor,
-          textColor: textColor,
-          titleTextStyle:
-              (titleStyle == MaterialListTileTitleStyle.normal
-                      ? theme.textTheme.titleMedium
-                      : theme.textTheme.bodyLarge)!
-                  .copyWith(color: colorScheme.onSurface),
-          subtitleTextStyle: subtitleTextStyle,
-          leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
-          enabled: enabled,
-          onTap: onTap,
-          onLongPress: onLongPress,
-          onFocusChange: onFocusChange,
-          mouseCursor: mouseCursor,
-          selected: selected,
-          focusColor: focusColor,
-          hoverColor: hoverColor,
-          splashColor: splashColor,
-          focusNode: focusNode,
-          autofocus: autofocus,
-          tileColor: tileColor,
-          selectedTileColor: selectedTileColor ?? colorScheme.primaryContainer,
-          enableFeedback: enableFeedback,
+    return TweenAnimationBuilder(
+      tween: RoundedRectangleBorderTween(begin: shape, end: shape),
+      duration: ExpressiveCurves.expressiveSpatial.fastDuration,
+      curve: ExpressiveCurves.expressiveSpatial.fast,
+      builder: (_, value, _) => Material(
+        color: Colors.transparent,
+        child: Padding(
+          padding: padding ?? EdgeInsets.symmetric(vertical: 1, horizontal: 16),
+          child: ListTile(
+            leading: leading,
+            title: title != null
+                ? Transform.translate(offset: Offset(0, 1), child: title)
+                : null,
+            subtitle: subtitle != null
+                ? Transform.translate(offset: Offset(0, -1), child: subtitle)
+                : null,
+            trailing: trailing,
+            isThreeLine: isThreeLine,
+            selectedColor: selectedColor ?? colorScheme.onPrimaryContainer,
+            iconColor: iconColor,
+            textColor: textColor,
+            titleTextStyle:
+                (titleStyle == MaterialListTileTitleStyle.normal
+                        ? theme.textTheme.titleMedium
+                        : theme.textTheme.bodyLarge)!
+                    .copyWith(color: colorScheme.onSurface),
+            subtitleTextStyle: subtitleTextStyle,
+            leadingAndTrailingTextStyle: leadingAndTrailingTextStyle,
+            enabled: enabled,
+            onTap: onTap,
+            onLongPress: onLongPress,
+            onFocusChange: onFocusChange,
+            mouseCursor: mouseCursor,
+            selected: selected,
+            focusColor: focusColor,
+            hoverColor: hoverColor,
+            splashColor: splashColor,
+            focusNode: focusNode,
+            autofocus: autofocus,
+            tileColor: tileColor,
+            selectedTileColor:
+                selectedTileColor ?? colorScheme.primaryContainer,
+            enableFeedback: enableFeedback,
 
-          shape: shape,
-          contentPadding: EdgeInsets.only(
-            top: 6,
-            bottom: 6,
-            left: 20,
-            right: 16,
+            shape: value,
+            contentPadding: EdgeInsets.only(
+              top: 6,
+              bottom: 6,
+              left: 20,
+              right: 16,
+            ),
+            horizontalTitleGap: 16, // should be 24 to be in line with official Google products, but it looks way better right now
+            minTileHeight: 60,
           ),
-          horizontalTitleGap:
-              16, // should be 24 to be in line with official Google products, but it looks way better right now
-          minTileHeight: 60,
         ),
       ),
     );
@@ -523,10 +581,26 @@ class MaterialListTileBottomSpacer extends StatelessWidget {
       SafeArea(top: false, left: false, right: false, child: SizedBox.shrink());
 }
 
-Future<void> copyData(BuildContext context, String? data) async {
+class RoundedRectangleBorderTween extends Tween<RoundedRectangleBorder> {
+  RoundedRectangleBorderTween({super.begin, super.end});
+
+  @override
+  RoundedRectangleBorder lerp(double t) {
+    final result = ShapeBorder.lerp(begin, end, t);
+    return result is RoundedRectangleBorder
+        ? result
+        : (t < 0.5 ? begin : end) ?? RoundedRectangleBorder();
+  }
+}
+
+Future<void> copyData(
+  BuildContext context,
+  String? data, [
+  bool showSnackBar = true,
+]) async {
   if (data == null) return;
   await Clipboard.setData(ClipboardData(text: data));
-  if (context.mounted) {
+  if (context.mounted && showSnackBar) {
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

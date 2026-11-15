@@ -8,9 +8,10 @@ export 'package:path_provider/path_provider.dart';
 export 'package:url_launcher/url_launcher.dart';
 
 export 'src/components/about_screen.dart';
+export 'src/components/alert_dialog.dart';
 export 'src/components/check_dialog.dart';
+export 'src/components/confirmation_dialog.dart';
 export 'src/components/database.dart';
-export 'src/components/info_dialog.dart';
 export 'src/components/licenses_screen.dart';
 export 'src/components/material_flexible_space_bar.dart';
 export 'src/components/material_list_tile.dart';

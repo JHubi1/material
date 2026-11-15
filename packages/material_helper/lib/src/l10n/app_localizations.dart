@@ -137,6 +137,12 @@ abstract class MaterialHelperLocalizations {
   /// **'Light'**
   String get themeModeSwitcherLight;
 
+  /// Label for the continue action in a confirmation dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get confirmationDialogActionContinue;
+
   /// Default label for the action button in a prompt dialog
   ///
   /// In en, this message translates to:
@@ -154,6 +160,12 @@ abstract class MaterialHelperLocalizations {
   /// In en, this message translates to:
   /// **'Copy'**
   String get promptDialogActionCopy;
+
+  /// Label for the toggle obscure action in a prompt dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle obscure'**
+  String get promptDialogActionToggleObscure;
 
   /// Title of the about screen. This string is in MLA title case
   ///
